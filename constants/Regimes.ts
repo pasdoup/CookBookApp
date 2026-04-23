@@ -1,0 +1,1 @@
+export const Regimes = ['Tous', 'Végé', 'Vegan', 'Standard'];
