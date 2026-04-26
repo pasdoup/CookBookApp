@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
-import { emptyIngredient, Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeInput, RecipeRegime, RecipeType } from "@/data/types";
+import { emptyIngredient, Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeInput, RecipeRegime, RecipeType, UNITS } from "@/data/types";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
 import { Chip } from "./Chip";
@@ -115,11 +116,17 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                         placeholder="Quantité" 
                         style={[styles.input, {backgroundColor: colors.search, flex: 1}]}
                         keyboardType="numeric" />
-                    <TextInput 
-                        value={ingredient.unit} 
-                        onChangeText={(text) => updateIngredient(index, 'unit', text)}
-                        placeholder="Unité" 
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]} />
+                    <Picker 
+                        selectedValue={ingredient.unit}
+                        onValueChange={(text) => updateIngredient(index, 'unit', text)}
+                        placeholder="Unité"
+                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]}>
+                        {UNITS.map((u) => (
+                            <Picker.Item key={u} label={u} value={u} />
+                        ))}
+                    </Picker>
+                    
+
                     <TextInput 
                         value={ingredient.name} 
                         onChangeText={(text) => updateIngredient(index, 'name', text)}
