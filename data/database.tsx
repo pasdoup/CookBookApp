@@ -66,7 +66,7 @@ export async function initializeDb(db: SQLite.SQLiteDatabase) {
   }
 }
 
-
+//------------------------------Recipe
 type RecipeRow = {
   id: number; title: string; time: number;
   type: string; regime: string;
@@ -146,42 +146,15 @@ export async function dbSearch(q: string, regime?: string, type?: string): Promi
   return rows.map(_rowToRecipe);
 }
 
-export async function dbGetShopping(): Promise<{ selectedIds: number[]; checkedKeys: string[] }> {
-  const db = await getDb();
-  const sel = await db.getAllAsync<{ recipe_id: number }>('SELECT recipe_id FROM shopping_selection');
-  const chk = await db.getAllAsync<{ item_key:  string }>('SELECT item_key  FROM shopping_checked');
-  return { selectedIds: sel.map(r => r.recipe_id), checkedKeys: chk.map(r => r.item_key) };
-}
-
-export async function dbSaveShopping(selectedIds: number[], checkedKeys: string[]): Promise<void> {
-  const db = await getDb();
-  await db.runAsync('DELETE FROM shopping_selection');
-  await db.runAsync('DELETE FROM shopping_checked');
-  for (const id  of selectedIds) await db.runAsync('INSERT INTO shopping_selection (recipe_id) VALUES (?)', [id]);
-  for (const key of checkedKeys) await db.runAsync('INSERT INTO shopping_checked   (item_key)  VALUES (?)', [key]);
-}
-
-export function formatIngredient(ing: Ingredient): string {
-  const parts: string[] = [];
-  if (ing.quantity > 0)            parts.push(String(ing.quantity));
-  if (ing.unit && ing.unit.trim()) parts.push(ing.unit.trim());
-  parts.push(ing.name);
-  return parts.join(' ');
-}
-
-export function emptyIngredient(): Ingredient {
-  return { name: '', quantity: 0, unit: '' };
-}
+//-------------------------------Shopping
 
 export async function addItem(name: string, quantity: number, unit: string) {
   const db = await getDb();
-
   // Vérifier si l’ingrédient existe déjà
   const existing = await db.getFirstAsync<ShoppingItem>(
-    "SELECT * FROM shopping_list WHERE name = ? AND unit = ?",
-    [name, unit]
+    "SELECT * FROM shopping_list WHERE upper(name) = ? AND unit = ?",
+    [name.toUpperCase(), unit]
   );
-
   if (existing) {
     await db.runAsync(
       "UPDATE shopping_list SET quantity = quantity + ? WHERE id = ?",
@@ -189,7 +162,6 @@ export async function addItem(name: string, quantity: number, unit: string) {
     );
     return;
   }
-
   await db.runAsync(
     "INSERT INTO shopping_list (name, quantity, unit) VALUES (?, ?, ?)",
     [name, quantity, unit]
@@ -219,6 +191,16 @@ export async function clearShoppingList() {
   await db.runAsync("DELETE FROM shopping_list");
 }
 
+export async function updateItem(id: number, name: string, quantity: number, unit: string) {
+  const db = await getDb();
+  await db.runAsync(
+    `UPDATE shopping_list
+     SET name = ?, quantity = ?, unit = ?
+     WHERE id = ?`,
+    [name, quantity, unit, id]
+  );
+}
+// -------------------------------------- Default
 async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {
 
   const ins = (title: string, time: number, type: string, regime: string,

@@ -17,7 +17,7 @@ export function formatIngredient(ing: Ingredient): string {
 }
 
 export const UNITS: string[] = [
-  'g', 'kg', 'ml', 'cl', 'l', 'cs', 'cc', 'oz', 'boite', 'tranches', '',
+  'g', 'kg', 'ml', 'cl', 'l', 'cs', 'cc', 'oz', 'boite', '', 'tranches',
 ];
 
 export type ShoppingItem = {

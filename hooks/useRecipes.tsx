@@ -1,4 +1,4 @@
-import { addItem, clearShoppingList, getAllItems, removeItem, toggleItem } from '@/data/database';
+import { addItem, clearShoppingList, getAllItems, removeItem, toggleItem, updateItem } from '@/data/database';
 import React, {
   createContext,
   ReactNode,
@@ -37,14 +37,15 @@ type RecipesContextType = State & {
   updateRecipe:    (id: number, input: RecipeInput) => Promise<Recipe>;
   deleteRecipe:    (id: number) => Promise<void>;
   getRecipe:       (id: number) => Recipe | undefined;
-  displayRecipes:   (search: string) => Recipe[];
   searchRecipes:   (q: string, regime?: string, type?: string) => Promise<Recipe[]>;
 
   shoppingList: any[];
   addRecipeToShoppingList: (id: number) => Promise<void>;
+  addItemToShoppingList: (name: string, quantity: number, unit: string) => Promise<void>;
   toggleShoppingItem: (id: number) => Promise<void>;
   removeShoppingItem: (id: number) => Promise<void>;
   clearList: () => Promise<void>;
+  updateShoppingItem: (id: number, name: string, quantity: number, unit: string) => Promise<void>;
 
 
 };
@@ -89,7 +90,6 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getRecipe      = useCallback((id: number) => state.recipes.find(r => r.id === id), [state.recipes]);
-  const displayRecipes  = useCallback((search: string) => state.recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())), []);
   const searchRecipes  = useCallback((q: string, regime?: string, type?: string) => dbSearch(q, regime, type), []);
 
   //---------------------------SHOPPINGLIST-----------------------------------------------------------------------------
@@ -109,6 +109,13 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
     [state.recipes]
   );
 
+  const addItemToShoppingList = useCallback(
+    async (name: string, quantity: number, unit: string) => {
+      await addItem(name, quantity, unit);
+      await loadShoppingList();
+    }, []
+  )
+
   const toggleShoppingItem = useCallback(async (id: number) => {
     await toggleItem(id);
     await loadShoppingList();
@@ -124,19 +131,26 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
     await loadShoppingList();
   }, []);
 
+  const updateShoppingItem = useCallback(async (id: number, name: string, quantity: number, unit: string) => {
+    await updateItem(id, name, quantity, unit);
+    await loadShoppingList();
+}, []);
+
+
   return (
     <RecipesContext.Provider value={{ ...state, 
       addRecipe, 
       updateRecipe, 
       deleteRecipe, 
       getRecipe, 
-      displayRecipes,
       searchRecipes, 
       shoppingList,
       addRecipeToShoppingList,
+      addItemToShoppingList,
       toggleShoppingItem,
       removeShoppingItem,
-      clearList}}>
+      clearList,
+      updateShoppingItem}}>
       {children}
     </RecipesContext.Provider>
   );
