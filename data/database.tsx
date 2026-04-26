@@ -1,22 +1,31 @@
 import * as SQLite from "expo-sqlite";
-import { Ingredient, Recipe, RecipeInput } from "./types";
+import { Ingredient, Recipe, RecipeInput, ShoppingItem } from "./types";
 
-const RESET_DB = true;
+
+const DB_VERSION = 2;
 let _db: SQLite.SQLiteDatabase | null = null;
+let _dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 export async function getDb(): Promise<SQLite.SQLiteDatabase> {
   if (_db) return _db;
-  _db = await SQLite.openDatabaseAsync('cookbook.db');
-  await initializeDb(_db);
-  return _db;
+  if (_dbPromise) return _dbPromise;
+  _dbPromise = (async () => {
+    const db = await SQLite.openDatabaseAsync("cookbook.db");
+    await initializeDb(db);
+    _db = db;
+    return db;
+  })();
+  return _dbPromise;
 }
 
 export async function initializeDb(db: SQLite.SQLiteDatabase) {
-  if (RESET_DB) {
+  await db.execAsync('PRAGMA journal_mode = WAL;');
     await db.execAsync(`
-      DROP TABLE IF EXISTS recipes;
-    `);
-  }
+    CREATE TABLE IF NOT EXISTS db_meta (
+      key   TEXT PRIMARY KEY,
+      value TEXT NOT NULL DEFAULT 0
+    );
+  `);
 
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS recipes (
@@ -28,17 +37,33 @@ export async function initializeDb(db: SQLite.SQLiteDatabase) {
       ingredients TEXT NOT NULL,
       steps       TEXT NOT NULL
     );
+  `);
+
+  await db.execAsync(`
     CREATE TABLE IF NOT EXISTS shopping_list (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       quantity REAL NOT NULL,
       unit TEXT NOT NULL,
       checked INTEGER NOT NULL DEFAULT 0
-  );
+    );
   `);
 
-  const row = await db.getFirstAsync<{ cnt: number }>('SELECT COUNT(*) as cnt FROM recipes');
-  if (row && row.cnt === 0) await insertDefaultRecipes(db);
+  // Lire la version actuelle en base
+  const meta = await db.getFirstAsync<{ value: string }>(
+    "SELECT value FROM db_meta WHERE key = 'version'"
+  );
+  const storedVersion = meta ? parseInt(meta.value, 10) : 0;
+  if (storedVersion !== DB_VERSION) {
+    // Nouvelle version : vider les données et re-seeder
+    await db.execAsync("DELETE FROM recipes;");
+    await db.execAsync("DELETE FROM shopping_list;");
+   await insertDefaultRecipes(db);
+   await db.runAsync(
+      "INSERT OR REPLACE INTO db_meta (key, value) VALUES ('version', ?)",
+      [String(DB_VERSION)]
+    );
+  }
 }
 
 
@@ -146,6 +171,52 @@ export function formatIngredient(ing: Ingredient): string {
 
 export function emptyIngredient(): Ingredient {
   return { name: '', quantity: 0, unit: '' };
+}
+
+export async function addItem(name: string, quantity: number, unit: string) {
+  const db = await getDb();
+
+  // Vérifier si l’ingrédient existe déjà
+  const existing = await db.getFirstAsync<ShoppingItem>(
+    "SELECT * FROM shopping_list WHERE name = ? AND unit = ?",
+    [name, unit]
+  );
+
+  if (existing) {
+    await db.runAsync(
+      "UPDATE shopping_list SET quantity = quantity + ? WHERE id = ?",
+      [quantity, existing.id]
+    );
+    return;
+  }
+
+  await db.runAsync(
+    "INSERT INTO shopping_list (name, quantity, unit) VALUES (?, ?, ?)",
+    [name, quantity, unit]
+  );
+}
+
+export async function getAllItems() {
+  const db = await getDb();
+  return await db.getAllAsync<ShoppingItem>("SELECT * FROM shopping_list ORDER BY name ASC");
+}
+
+export async function toggleItem(id: number) {
+  const db = await getDb();
+  await db.runAsync(
+    "UPDATE shopping_list SET checked = 1 - checked WHERE id = ?",
+    [id]
+  );
+}
+
+export async function removeItem(id: number) {
+  const db = await getDb();
+  await db.runAsync("DELETE FROM shopping_list WHERE id = ?", [id]);
+}
+
+export async function clearShoppingList() {
+  const db = await getDb();
+  await db.runAsync("DELETE FROM shopping_list");
 }
 
 async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {

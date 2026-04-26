@@ -29,10 +29,11 @@ export default function List() {
           {shoppingList.map((item) => (
         <View key={item.id} >
           <Pressable onPress={() => toggleShoppingItem(item.id)}>
-            <ThemedText >
+            <ThemedText>0</ThemedText>
+          </Pressable>
+            <ThemedText style={{textDecorationLine: item.checked ? 'none' : 'line-through'}}>
               • {item.name} — {item.quantity} {item.unit}
             </ThemedText>
-          </Pressable>
           <Pressable onPress={() => removeShoppingItem(item.id)}>
             <ThemedText>Supprimer</ThemedText>
           </Pressable>

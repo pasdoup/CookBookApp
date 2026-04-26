@@ -10,7 +10,7 @@ type Props = ViewProps & {
 export function ButtonNewRecipe({style, ...rest}: Props) {
     const colors = useThemeColors()
     return (
-        <Link href="/createRecipe" asChild>
+        <Link href="/recipe/createRecipe" asChild>
             <Pressable android_ripple={{color: colors.header, foreground: true}} style={{borderRadius: 8}}>
                 <View style={[styles.container, style]} {...rest}>
                     <ThemedText variant="newRecipe">+</ThemedText>

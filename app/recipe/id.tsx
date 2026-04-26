@@ -3,7 +3,7 @@ import { RecipeDesc } from "@/components/recipe/RecipeDesc";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { formatIngredient } from "@/data/database";
+import { formatIngredient } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { Link, router, useLocalSearchParams } from "expo-router";
@@ -87,7 +87,7 @@ export default function Recipe() {
           ))}
         </Card>
         {/*------------------------ Actions ------------------------*/}
-        <Link href={{pathname: "/updateRecipe", params: {id: recipe.id}}} asChild>
+        <Link href={{pathname: "/recipe/updateRecipe", params: {id: recipe.id}}} asChild>
           <Pressable style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
             <ThemedText variant="bodyStrong" color="background">Modifier la recette</ThemedText>
           </Pressable>

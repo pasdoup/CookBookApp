@@ -1,24 +1,16 @@
 import { Chip } from "@/components/Chip";
+import { EmptyState } from "@/components/EmptyState";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { Recipe, RECIPE_REGIMES, RECIPE_TYPES } from "@/data/types";
+import { Recipe, RECIPE_REGIMES, RECIPE_TYPES, TIMES } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useCallback, useState } from "react";
 import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type timeFilter = { label: string; min?: number; max?: number };
-
-const TIMES: timeFilter[] = [
-  { label: 'Toutes' },
-  { label: '≤ 20 min', max: 20 },
-  { label: '≤ 30 min', max: 30 },
-  { label: '≤ 45 min', max: 45 },
-  { label: '> 45 min', min: 45 },
-];
 
 export default function Generator() {
   const colors = useThemeColors()
@@ -26,24 +18,18 @@ export default function Generator() {
 
   const [regime,      setRegime]      = useState('Tous');
   const [type,        setType]        = useState('Tous');
-  const [timeIdx,     setTimeIdx]    = useState(0);
+  const [time,     setTime]    = useState('Toutes');
   const [result,      setResult]      = useState<Recipe | null>(null);
   const [noResult,    setNoResult]    = useState(false);
   const [history,     setHistory]     = useState<number[]>([]);
-
-  const [activeTypes, setActiveTypes] = useState('Tous')
-  const [activeRegimes, setActiveRegimes] = useState('Tous')
-  const [idRecipeId, setIdRecipeId] = useState<number | null>(null)
   
   const getFiltered = useCallback((): Recipe[] => {
     let list = recipes;
     if (regime !== 'Tous') list = list.filter(r => r.regime === regime);
     if (type   !== 'Tous') list = list.filter(r => r.type   === type);
-    const d = TIMES[timeIdx];
-    if (d.max !== undefined) list = list.filter(r => r.time <= d.max!);
-    if (d.min !== undefined) list = list.filter(r => r.time >  d.min!);
+    if (time   !== 'Toutes') list = list.filter(r => r.time   <= Number(time));
     return list;
-  }, [recipes, regime, type, timeIdx]);
+  }, [recipes, regime, type, time]);
 
   const draw = useCallback(() => {
     const filtered = getFiltered();
@@ -60,7 +46,6 @@ export default function Generator() {
   }, [getFiltered, history]);
 
   const resetFilter = () => { setResult(null); setNoResult(false); };
-  const filteredCount = getFiltered().length;
 
 
   
@@ -81,7 +66,7 @@ export default function Generator() {
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item}
         renderItem={({item}) => 
-          <Pressable onPress={() => setActiveTypes(item)}><Chip name={item} active={activeTypes === item} /></Pressable>} 
+          <Pressable onPress={() => {setType(item); resetFilter();}}><Chip name={item} active={type === item} /></Pressable>} 
       />
       <FlatList 
         horizontal 
@@ -89,7 +74,15 @@ export default function Generator() {
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-          <Pressable onPress={() => setActiveRegimes(item)}><Chip name={item} active={activeRegimes === item} /></Pressable>} 
+          <Pressable onPress={() => { setRegime(item); resetFilter(); }}><Chip name={item} active={regime === item} /></Pressable>} 
+      />
+      <FlatList 
+        horizontal 
+        data={TIMES} 
+        contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
+        keyExtractor={(item)=> item} 
+        renderItem={({item}) => 
+          <Pressable onPress={() => { setTime(item); resetFilter(); }}><Chip name={item} active={time === item} /></Pressable>} 
       />
     </View>
     {/*------------------------ Body ------------------------*/}
@@ -104,7 +97,7 @@ export default function Generator() {
 
       {noResult && (
         <View style={styles.noRecipe}>
-          <ThemedText variant="body" color="text">Aucune recette trouvée avec ces filtres</ThemedText>
+          <EmptyState message="Aucune recette trouvé"></EmptyState>
         </View>
       )}
 

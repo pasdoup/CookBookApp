@@ -16,10 +16,6 @@ export default function CreateRecipe() {
   const handleSubmit = async (data: RecipeInput) => {
     await addRecipe(data);
     router.dismissAll()
-    // router.navigate({
-    //   pathname: "/recipe/id",
-    //   params: { id: id } 
-    // })
   };
 
   return (

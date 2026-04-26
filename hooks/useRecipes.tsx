@@ -1,4 +1,4 @@
-import { addItem, clearShoppingList, getAllItems, removeItem, toggleItem } from '@/data/functions/shoppingListRepository';
+import { addItem, clearShoppingList, getAllItems, removeItem, toggleItem } from '@/data/database';
 import React, {
   createContext,
   ReactNode,
@@ -37,6 +37,7 @@ type RecipesContextType = State & {
   updateRecipe:    (id: number, input: RecipeInput) => Promise<Recipe>;
   deleteRecipe:    (id: number) => Promise<void>;
   getRecipe:       (id: number) => Recipe | undefined;
+  displayRecipes:   (search: string) => Recipe[];
   searchRecipes:   (q: string, regime?: string, type?: string) => Promise<Recipe[]>;
 
   shoppingList: any[];
@@ -88,6 +89,7 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getRecipe      = useCallback((id: number) => state.recipes.find(r => r.id === id), [state.recipes]);
+  const displayRecipes  = useCallback((search: string) => state.recipes.filter(r => r.title.toLowerCase().includes(search.toLowerCase())), []);
   const searchRecipes  = useCallback((q: string, regime?: string, type?: string) => dbSearch(q, regime, type), []);
 
   //---------------------------SHOPPINGLIST-----------------------------------------------------------------------------
@@ -128,6 +130,7 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
       updateRecipe, 
       deleteRecipe, 
       getRecipe, 
+      displayRecipes,
       searchRecipes, 
       shoppingList,
       addRecipeToShoppingList,

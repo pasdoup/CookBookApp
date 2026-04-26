@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/Colors";
-import { Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeRegime, RecipeType } from "@/data/types";
+import { emptyIngredient, Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeInput, RecipeRegime, RecipeType } from "@/data/types";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
@@ -9,25 +9,27 @@ import { ThemedText } from "./ThemedText";
 
 
 type Props = {
-    recipe?: Partial<RecipePayload>,
-    onSubmit: (payload: RecipePayload) => Promise<void>,
+    recipe?: Partial<RecipeInput>,
+    onSubmit: (payload: RecipeInput) => Promise<void>,
     submitLabel?: string,
 }
 
-export default function Form({recipe, onSubmit, submitLabel = 'Enregistrer'}: Props) {
+export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}: Props) {
     const colors = useThemeColors()
     const [submitting, setSubmitting] = useState(false);
 
     const [title, setTitle] = useState(recipe?.title || '')
-    const [time, setTime] = useState(recipe?.time || '')   
+    const [time, setTime] = useState(String(recipe?.time || ''))
     const [type, setType] = useState<RecipeType>(recipe?.type || 'Plat')
     const [regime, setRegime] = useState<RecipeRegime>(recipe?.regime || 'Standard')
-    const [ingredients, setIngredients] = useState<Ingredient[]>(recipe?.ingredients?.length ? recipe.ingredients : [{ quantity: '', unit: '', name: '' }])
+    const [ingredients, setIngredients] = useState<Ingredient[]>(
+    recipe.ingredients?.length ? recipe.ingredients : [emptyIngredient()]
+  );
     const [steps, setSteps] = useState<string[]>(recipe?.steps?.length ? recipe.steps : [''])
 
 
     const addIngredient = () => {
-        setIngredients((prev) => [...prev, { name: '', quantity: '', unit: '' }])
+        setIngredients((prev) => [...prev, emptyIngredient()])
     }
     const removeIngredient = (id: number) => {
         setIngredients((prev) => prev.filter((_, i) => i !== id))

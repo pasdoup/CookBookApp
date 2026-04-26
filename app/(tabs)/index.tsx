@@ -1,5 +1,6 @@
 import { ButtonNewRecipe } from "@/components/ButtonNewRecipe";
 import { Chip } from "@/components/Chip";
+import { EmptyState } from "@/components/EmptyState";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
 import { SearchBar } from "@/components/SearchBar";
@@ -35,7 +36,7 @@ export default function Index() {
 
   useEffect(() => {
      run(query, regimeFilter, typeFilter)
-  }, [query, regimeFilter, typeFilter, run]);
+  }, [results, query, regimeFilter, typeFilter, run]);
 
 
   return (
@@ -74,14 +75,18 @@ export default function Index() {
       </View>
       {/*------------------------ Body ------------------------*/}
       <View style={[styles.body]}>
-        <FlatList 
-          data={results} 
-          contentContainerStyle={[styles.list]}
-          renderItem={({item}) => 
-              <RecipeCard id={item.id} title={item.title} time={item.time} type={item.type} regime={item.regime} />
-          } 
-          keyExtractor={(item)=> item.id.toString() }
-        />
+        {results.length === 0 ?
+          <EmptyState message="Aucune recette trouvé"></EmptyState>
+        :
+          <FlatList 
+            data={results} 
+            contentContainerStyle={[styles.list]}
+            renderItem={({item}) => 
+                <RecipeCard id={item.id} title={item.title} time={item.time} type={item.type} regime={item.regime} />
+            } 
+            keyExtractor={(item)=> item.id.toString() }
+          />
+        }
 
         <ButtonNewRecipe style={styles.buttonNewRecipe}/>
 
