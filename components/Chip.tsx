@@ -19,7 +19,9 @@ export function Chip ({style, name, color, time, active, ...rest}: Props) {
         gap={4} 
         style={[style, 
                 styles.container, 
-                active ? styles.activeChip : color? {backgroundColor: Colors.regime[color].bg} : {backgroundColor: colors.search}]} {...rest} >
+                active ? styles.activeChip : 
+                    color? {backgroundColor: Colors.regime[color].bg} : {backgroundColor: colors.search}]} 
+                {...rest} >
         {time ? <Image source={require("@/assets/images/time-left.png")} style={styles.time} /> : null}
         <ThemedText variant="body" >{name}</ThemedText>
     </Row>)

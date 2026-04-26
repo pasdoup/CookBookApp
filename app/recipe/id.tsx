@@ -3,8 +3,8 @@ import { RecipeDesc } from "@/components/recipe/RecipeDesc";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { addItems } from "@/functions/ItemFunctions";
-import { deleteRecipe, getRecipeById } from "@/functions/RecipeFunctions";
+import { formatIngredient } from "@/data/database";
+import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -13,27 +13,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Recipe() {
   const params = useLocalSearchParams()
   const colors = useThemeColors()
-  const recipe = getRecipeById(Number(params.id))
+  const { getRecipe, deleteRecipe, addRecipeToShoppingList } = useRecipes();
+
+  const recipe = getRecipe(Number(params.id));
   const recipeColor = recipe?.type as keyof typeof Colors.type
-  const ingredients = recipe?.ingredients || [{ quantity: '', unity: '', name: '' }]
-  const steps = recipe?.steps || []
 
-  const addRecipeToList = () => {
-    alert("Ajouter les ingrédients de cette recette à la liste de course ?") 
-    addItems(ingredients.map(ing => ({ ...ing, isActive: true })))
-  }
-
-  const deleteRecipeById = (id: number) => { 
-    Alert.alert("Êtes-vous sûr de vouloir supprimer cette recette ?", "", 
-      [
-        { text: "Annuler", style: "cancel" },
-        { text: "Supprimer", style: "destructive", onPress: () => { 
-            deleteRecipe(id)
-            router.dismissAll()
-        } },
-      ]
-    )
-  }
 
   if (!recipe) {
     return (
@@ -45,11 +29,29 @@ export default function Recipe() {
           <ThemedText variant="headline">Go back</ThemedText>
         </View>
         <View>
-          <Text>Recette introuvable</Text>
+          <ThemedText>Recette introuvable</ThemedText>
         </View>
       </SafeAreaView>
     );
   }
+
+    const handleDelete = () => {
+    Alert.alert(
+      'Supprimer la recette',
+      `Voulez-vous vraiment supprimer "${recipe.title}" ?`,
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: async () => {
+            await deleteRecipe(recipe.id);
+            router.dismissAll()
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView>
@@ -65,19 +67,17 @@ export default function Recipe() {
         {/*------------------------ Ingredients ------------------------*/}
         <Card style={styles.ingredients}>
           <ThemedText variant="headline">Ingrédients</ThemedText>
-          {ingredients.map((ingredient, index) => (
+          {recipe.ingredients.map((ingredient, index) => (
             <Row gap={4} key={index}>
               <View style={styles.ingrDot} />
-              {ingredient.quantity ? <ThemedText>{ingredient.quantity}</ThemedText> : null}
-              {ingredient.unity ? <ThemedText>{ingredient.unity}</ThemedText> : null}
-              <ThemedText>{ingredient.name}</ThemedText>
+              <ThemedText>{formatIngredient(ingredient)}</ThemedText>
             </Row>
           ))}
         </Card>
         {/*------------------------ Steps ------------------------*/}
         <Card style={styles.steps}>
           <ThemedText variant="headline">Étapes</ThemedText>
-          {steps.map((step, index) => (
+          {recipe.steps.map((step, index) => (
             <Row gap={4} key ={index}>
               <View style={styles.stepCircle}>
                   <Text style={styles.body}>{index + 1}</Text>
@@ -92,10 +92,10 @@ export default function Recipe() {
             <ThemedText variant="bodyStrong" color="background">Modifier la recette</ThemedText>
           </Pressable>
         </Link>
-        <Pressable onPress={() => deleteRecipeById(Number(params.id))} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
+        <Pressable onPress={() => handleDelete()} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
           <ThemedText variant="bodyStrong" color="background">Supprimer la recette</ThemedText>
         </Pressable>
-        <Pressable onPress={() => addRecipeToList()} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
+        <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
           <ThemedText variant="bodyStrong" color="background">Ajouter à la liste de course</ThemedText>
         </Pressable>
       </ScrollView>

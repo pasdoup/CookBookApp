@@ -2,7 +2,8 @@ import { Card } from "@/components/Card";
 import Form from "@/components/Form";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { getRecipeById, updateRecipe } from "@/functions/RecipeFunctions";
+import { RecipeInput } from "@/data/types";
+import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { router, useLocalSearchParams } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -11,10 +12,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function UpdateRecipe() {
   const colors = useThemeColors()
   const params = useLocalSearchParams()
-  const recipe = getRecipeById(Number(params.id))
+  const { getRecipe, updateRecipe } = useRecipes();
+
+  const recipe = getRecipe(Number(params.id));
   
-  const update = (value: string) => { 
-   updateRecipe(Number(params.id), JSON.parse(value))
+  if (!recipe) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <Pressable onPress={router.dismissAll}>
+          <Image source={require("@/assets/images/back.png")} style={styles.logo} />
+        </Pressable> 
+        <View style={[styles.header, {backgroundColor: colors.header}]}>
+          <ThemedText variant="headline">Go back</ThemedText>
+        </View>
+        <View>
+          <ThemedText>Recette introuvable</ThemedText>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const update = async (data: RecipeInput) => { 
+   await updateRecipe(recipe.id, data);
     router.navigate({
       pathname: "/recipe/id",
       params: { id: params.id } 
@@ -31,7 +50,7 @@ export default function UpdateRecipe() {
           <ThemedText variant="headline">Modifier la recette</ThemedText>
         </View>
         <Card>
-          <Form onSubmit={update} recipe={recipe}/>
+          <Form onSubmit={update} recipe={recipe} submitLabel="Sauvegarder les modifications"/>
         </Card>
       </ScrollView>
     </SafeAreaView>

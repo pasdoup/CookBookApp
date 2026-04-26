@@ -1,39 +1,16 @@
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { getItems } from "@/functions/ItemFunctions";
+import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function List() {
   const colors = useThemeColors()
-  const test = getItems()
-  const [items, setItems] = useState(getItems())
-  const [item, setItem] = useState({ quantity: '', unity: '', name: '', isActive: true })
+  const { shoppingList, toggleShoppingItem, removeShoppingItem, clearList } = useRecipes();
 
-  const addItem = () => {
-    //setItems((prev) => [...prev, item])
-    setItem({ quantity: '', unity: '', name: '', isActive: true })
-  }
-  const removeItem = (id: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== id))
-  }
-  const updateItem = (index: number, text: string) => {
-    setItems((prev) => prev.map((ing, i) => i === index ? { ...ing, name: text } : ing))
-  }
-  const activeItem = (index: number) => {
-    setItems((prev) => prev.map((ing, i) => i === index ? { ...ing, isActive: !ing.isActive } : ing))
-  }
-  const reinit = () => {
-    setItems([])
-  }
 
-  const reload = () => {
-    setItems(getItems())
-  }
-  
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: colors.tint}]} edges={['top', 'left', 'right']}>
       <ScrollView>
@@ -46,29 +23,23 @@ export default function List() {
         </View>
         {/*------------------------ Body ------------------------*/}
         <View style={[styles.body]}>
-          {items.map((item, index) => (
-          <Row key={index}>
-            <Pressable onPress={() => activeItem(index)}>
-              <View style={styles.buttonRemove}>
-                <ThemedText variant="bodyStrong">O</ThemedText>
-              </View>
-            </Pressable>
-            <ThemedText style={{textDecorationLine: item.isActive ? 'none' : 'line-through'}}>
-              {item.quantity ? `${item.quantity} ` : ''} {item.unity ? `${item.unity} ` : ''}{item.name}
+          {shoppingList.length === 0 && (
+            <ThemedText >La liste est vide.</ThemedText>
+          )}
+          {shoppingList.map((item) => (
+        <View key={item.id} >
+          <Pressable onPress={() => toggleShoppingItem(item.id)}>
+            <ThemedText >
+              • {item.name} — {item.quantity} {item.unit}
             </ThemedText>
-            <Pressable onPress={() => updateItem(index, item.name)}>
-              <View style={styles.buttonRemove}>
-                <ThemedText variant="bodyStrong">E</ThemedText>
-              </View>
-            </Pressable>
-            <Pressable onPress={() => removeItem(index)}>
-              <View style={styles.buttonRemove}>
-                <ThemedText variant="bodyStrong">x</ThemedText>
-              </View>
-            </Pressable>
-          </Row>
-          ))}
-          <Row gap={8}>
+          </Pressable>
+          <Pressable onPress={() => removeShoppingItem(item.id)}>
+            <ThemedText>Supprimer</ThemedText>
+          </Pressable>
+        </View>
+      ))}
+          
+          {/* <Row gap={8}>
             <TextInput 
               value={item.quantity} 
               onChangeText={(text) => setItem({ ...item, quantity: text })}
@@ -91,18 +62,15 @@ export default function List() {
           </Row>
           <Pressable onPress={addItem}>
             <ThemedText variant="bodyStrong" color="header">+ Ajouter un ingrédient</ThemedText>
-          </Pressable>
+          </Pressable> */}
           <View>
-            <Pressable onPress={reinit}>
+             {shoppingList.length > 0 && (
+            <Pressable onPress={clearList}>
               <View style={styles.buttonSave}>
                 <ThemedText variant="bodyStrong">Réinitialiser la liste</ThemedText>
               </View>
             </Pressable> 
-            <Pressable onPress={reload}>
-              <View style={styles.buttonSave}>
-                <ThemedText variant="bodyStrong">Reload</ThemedText>
-              </View>
-            </Pressable> 
+             )}
           </View>
         </View>
       </ScrollView>

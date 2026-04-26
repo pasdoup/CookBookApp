@@ -2,7 +2,8 @@ import { Card } from "@/components/Card";
 import Form from "@/components/Form";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { createRecipe } from "@/functions/RecipeFunctions";
+import { RecipeInput } from "@/data/types";
+import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { router } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -10,14 +11,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateRecipe() {
   const colors = useThemeColors()
+  const { addRecipe } = useRecipes();
 
-  const save = (value: string) => { 
-    let id = createRecipe(JSON.parse(value))
-    router.navigate({
-      pathname: "/recipe/id",
-      params: { id: id } 
-    })
-  }
+  const handleSubmit = async (data: RecipeInput) => {
+    await addRecipe(data);
+    router.dismissAll()
+    // router.navigate({
+    //   pathname: "/recipe/id",
+    //   params: { id: id } 
+    // })
+  };
 
   return (
     <SafeAreaView>
@@ -29,7 +32,7 @@ export default function CreateRecipe() {
           <ThemedText variant="headline">Nouvelle recette</ThemedText>
         </View>
         <Card>
-          <Form onSubmit={save} />
+          <Form onSubmit={handleSubmit} submitLabel="Créer la recette"/>
         </Card>
       </ScrollView>
     </SafeAreaView>

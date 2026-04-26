@@ -34,6 +34,7 @@ export type RecipeRow = {
 // CRUD Repository
 // -----------------------------
 
+
 export async function getAllRecipes(): Promise<Recipe[]> {
   const db = await getDb();
   const rows = await db.getAllAsync("SELECT * FROM recipes");

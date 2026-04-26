@@ -28,7 +28,7 @@ export const Colors = {
     },
     Vegan: { 
       text: '#E8F4E8', 
-      bg: '#2D6B2D' 
+      bg: '#2d3e6b' 
     },
     Standard:{ 
       text: '#F5EDE8', 

@@ -1,5 +1,4 @@
 import { Colors } from "@/constants/Colors";
-import { getRecipeById } from "@/functions/RecipeFunctions";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, ViewStyle } from "react-native";
@@ -10,20 +9,23 @@ import { RecipeDesc } from "./RecipeDesc";
 type Props =  {
     style?: ViewStyle,
     id: number,
+    title: string,
+    time: number,
+    regime: string,
+    type: string,
 }
 
-export function RecipeCard ({style, id}: Props) {
-    const recipe = getRecipeById(id)
+export function RecipeCard ({style, id, title, time, regime, type}: Props) {
     const colors = useThemeColors()
     return (
         <Link href={{pathname: "/recipe/id", params: {id: id}}} asChild>
             <Pressable android_ripple={{color: colors.header, foreground: true}} style={{borderRadius: 8}}>
                 <Card style={[style, styles.container, {backgroundColor: colors.card}]}>
-                    <ThemedText variant="bodyStrong" color="text" >{recipe?.title}</ThemedText>
+                    <ThemedText variant="bodyStrong" color="text" >{title}</ThemedText>
                     <RecipeDesc 
-                        type={recipe?.type as keyof typeof Colors.regime} 
-                        regime={recipe?.regime as keyof typeof Colors.regime} 
-                        time={Number(recipe?.time)} 
+                        type={type as keyof typeof Colors.regime} 
+                        regime={regime as keyof typeof Colors.regime} 
+                        time={time} 
                     />
                 </Card>
             </Pressable>

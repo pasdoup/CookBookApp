@@ -4,20 +4,39 @@ import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemedText } from "@/components/ThemedText";
-import { Regimes } from "@/constants/Regimes";
-import { Types } from "@/constants/Types";
-import { filterRecipes } from "@/functions/RecipeFunctions";
+import type { Recipe, RecipeRegime, RecipeType } from '@/data/types';
+import { RECIPE_REGIMES, RECIPE_TYPES } from '@/data/types';
+import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const ALL = 'Tous';
+
 export default function Index() {
   const colors = useThemeColors()
-  const [search, setSearch] = useState('')
-  const [activeTypes, setActiveTypes] = useState('Tous')
-  const [activeRegimes, setActiveRegimes] = useState('Tous')
-  const displayedRecipes = filterRecipes(search, activeTypes, activeRegimes)
+
+  const { searchRecipes } = useRecipes();
+  const [query,        setQuery]        = useState('');
+  const [regimeFilter, setRegimeFilter] = useState<RecipeRegime | typeof ALL>(ALL);
+  const [typeFilter,   setTypeFilter]   = useState<RecipeType   | typeof ALL>(ALL);
+  const [results,      setResults]      = useState<Recipe[]>([]);
+
+
+  const run = useCallback(async (q: string, regime: string, type: string) => {
+      const res = await searchRecipes(
+        q,
+        regime !== ALL ? regime : undefined,
+        type   !== ALL ? type   : undefined
+      );
+      setResults(res);
+  }, [searchRecipes]);
+
+  useEffect(() => {
+     run(query, regimeFilter, typeFilter)
+  }, [query, regimeFilter, typeFilter, run]);
+
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['top', 'left', 'right']}>
@@ -30,25 +49,25 @@ export default function Index() {
       </View>
       {/*------------------------ Search & Filters ------------------------*/}
       <View style={[styles.search]}>
-        <SearchBar value={search} onChange={setSearch} />
+        <SearchBar value={query} onChange={setQuery} />
         <FlatList 
           horizontal 
-          data={Types} 
+          data={[ALL, ...RECIPE_TYPES]} 
           contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
           keyExtractor={(item)=> item} 
           renderItem={({item}) => 
-            <Pressable onPress={() => setActiveTypes(item)}>
-              <Chip name={item} active={activeTypes === item} />
+            <Pressable onPress={() =>  setTypeFilter(item as RecipeType | typeof ALL)}>
+              <Chip name={item} active={typeFilter === item} />
             </Pressable>
           } 
         />
         <FlatList 
           horizontal 
-          data={Regimes} 
+          data={[ALL, ...RECIPE_REGIMES]} 
           contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
           renderItem={({item}) => 
-            <Pressable onPress={() => setActiveRegimes(item)}>
-              <Chip name={item} active={activeRegimes === item} />
+            <Pressable onPress={() => setRegimeFilter(item as RecipeRegime | typeof ALL)}>
+              <Chip name={item} active={regimeFilter === item} />
             </Pressable>} 
           keyExtractor={(item)=> item} 
         />
@@ -56,10 +75,10 @@ export default function Index() {
       {/*------------------------ Body ------------------------*/}
       <View style={[styles.body]}>
         <FlatList 
-          data={displayedRecipes} 
+          data={results} 
           contentContainerStyle={[styles.list]}
           renderItem={({item}) => 
-              <RecipeCard id={item.id} />
+              <RecipeCard id={item.id} title={item.title} time={item.time} type={item.type} regime={item.regime} />
           } 
           keyExtractor={(item)=> item.id.toString() }
         />

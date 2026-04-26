@@ -1,6 +1,5 @@
-import { getDb } from "@/data/database";
+import { RecipesProvider } from "@/hooks/useRecipes";
 import { Stack } from "expo-router";
-import { useEffect } from "react";
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -8,13 +7,11 @@ export const unstable_settings = {
 
 export default function RootLayout() {
 
-  useEffect(() => {
-    getDb();
-  }, [])
-
   return (
+    <RecipesProvider>
       <Stack screenOptions={{headerShown: false}}>
         <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
       </Stack>
+    </RecipesProvider>
   );
 }
