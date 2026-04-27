@@ -55,7 +55,7 @@ export default function Generator() {
     <View style={[styles.header, {backgroundColor: colors.header}]}>
       <Row gap={16}>
         <Image source={require("@/assets/images/dice.png")} style={styles.logo} />
-        <ThemedText variant="headline" color="text">Quoi manger ?</ThemedText>
+        <ThemedText variant="header">Quoi manger ?</ThemedText>
       </Row>
     </View>
     {/*------------------------ Filters ------------------------*/}

@@ -13,7 +13,7 @@ export function ButtonNewRecipe({style, ...rest}: Props) {
         <Link href="/recipe/createRecipe" asChild>
             <Pressable android_ripple={{color: colors.header, foreground: true}} style={{borderRadius: 8}}>
                 <View style={[styles.container, style]} {...rest}>
-                    <ThemedText variant="newRecipe">+</ThemedText>
+                    <ThemedText variant="body">+</ThemedText>
                 </View>
             </Pressable>   
         </Link>

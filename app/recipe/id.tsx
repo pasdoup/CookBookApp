@@ -26,7 +26,7 @@ export default function Recipe() {
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
         </Pressable> 
         <View style={[styles.header, {backgroundColor: colors.header}]}>
-          <ThemedText variant="headline">Go back</ThemedText>
+          <ThemedText variant="header">Go back</ThemedText>
         </View>
         <View>
           <ThemedText>Recette introuvable</ThemedText>
@@ -61,12 +61,12 @@ export default function Recipe() {
           <Pressable onPress={router.dismissAll}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
           </Pressable> 
-          <ThemedText variant="headline">{recipe.title}</ThemedText>
+          <ThemedText variant="header">{recipe.title}</ThemedText>
           <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors["regime"]} time={recipe.time} />
         </View>
         {/*------------------------ Ingredients ------------------------*/}
         <Card style={styles.ingredients}>
-          <ThemedText variant="headline">Ingrédients</ThemedText>
+          <ThemedText variant="header">Ingrédients</ThemedText>
           {recipe.ingredients.map((ingredient, index) => (
             <Row gap={4} key={index}>
               <View style={styles.ingrDot} />
@@ -76,7 +76,7 @@ export default function Recipe() {
         </Card>
         {/*------------------------ Steps ------------------------*/}
         <Card style={styles.steps}>
-          <ThemedText variant="headline">Étapes</ThemedText>
+          <ThemedText variant="header">Étapes</ThemedText>
           {recipe.steps.map((step, index) => (
             <Row gap={4} key ={index}>
               <View style={styles.stepCircle}>
@@ -89,14 +89,14 @@ export default function Recipe() {
         {/*------------------------ Actions ------------------------*/}
         <Link href={{pathname: "/recipe/updateRecipe", params: {id: recipe.id}}} asChild>
           <Pressable style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
-            <ThemedText variant="bodyStrong" color="background">Modifier la recette</ThemedText>
+            <ThemedText variant="bodyStrong" >Modifier la recette</ThemedText>
           </Pressable>
         </Link>
         <Pressable onPress={() => handleDelete()} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
-          <ThemedText variant="bodyStrong" color="background">Supprimer la recette</ThemedText>
+          <ThemedText variant="bodyStrong" >Supprimer la recette</ThemedText>
         </Pressable>
         <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
-          <ThemedText variant="bodyStrong" color="background">Ajouter à la liste de course</ThemedText>
+          <ThemedText variant="bodyStrong" >Ajouter à la liste de course</ThemedText>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

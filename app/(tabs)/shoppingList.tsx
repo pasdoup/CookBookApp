@@ -54,7 +54,7 @@ export default function List() {
         <View style={[styles.header, {backgroundColor: colors.header}]}>
           <Row gap={16}>
             <Image source={require("@/assets/images/list.png")} style={styles.logo} />
-            <ThemedText variant="headline" color="text">Liste de course</ThemedText>
+            <ThemedText variant="header" >Liste de course</ThemedText>
           </Row>
         </View>
         {/*------------------------ Body ------------------------*/}

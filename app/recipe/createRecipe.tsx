@@ -25,7 +25,7 @@ export default function CreateRecipe() {
           <Pressable onPress={router.back}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
           </Pressable> 
-          <ThemedText variant="headline">Nouvelle recette</ThemedText>
+          <ThemedText variant="header">Nouvelle recette</ThemedText>
         </View>
         <Card>
           <Form onSubmit={handleSubmit} submitLabel="Créer la recette"/>

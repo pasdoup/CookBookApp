@@ -1,6 +1,7 @@
 import { ButtonNewRecipe } from "@/components/ButtonNewRecipe";
 import { Chip } from "@/components/Chip";
 import { EmptyState } from "@/components/EmptyState";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
 import { SearchBar } from "@/components/SearchBar";
@@ -45,8 +46,9 @@ export default function Index() {
       <View style={[styles.header, {backgroundColor: colors.header}]}>
         <Row gap={16}>
           <Image source={require("@/assets/images/iconBook.png")} style={styles.logo} />
-          <ThemedText variant="headline" color="text">Mes recettes</ThemedText>
+          <ThemedText variant="header">Mes recettes</ThemedText>
         </Row>
+        <HeaderBorder/>
       </View>
       {/*------------------------ Search & Filters ------------------------*/}
       <View style={[styles.search]}>

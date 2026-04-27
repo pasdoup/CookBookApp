@@ -1,61 +1,33 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Colors } from "@/constants";
+import { Link } from "expo-router";
+import { Pressable, StyleSheet, View, ViewProps } from "react-native";
+import { ThemedText } from "./ThemedText";
 
-type Props = {
-  label: string;
-  theme?: 'primary';
-  onPress?: () => void;
-};
+type Props = ViewProps & {
+    style?: ViewProps,
+    label: string,
+    color: keyof typeof Colors
+}
 
-export default function Button({ label, theme, onPress }: Props) {
-  if (theme === 'primary') {
+export function ButtonNewRecipe({style, label, color, ...rest}: Props) {
     return (
-      <View
-        style={[
-          styles.buttonContainer,
-          { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 },
-        ]}>
-        <Pressable
-          style={[styles.button, { backgroundColor: '#fff' }]}
-          onPress={onPress}>
-          <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
-          <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
-        </Pressable>
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.buttonContainer}>
-      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
-        <Text style={styles.buttonLabel}>{label}</Text>
-      </Pressable>
-    </View>
-  );
+        <Link href="/recipe/createRecipe" asChild>
+            <Pressable android_ripple={{color: color, foreground: true}} style={{borderRadius: 8}}>
+                <View style={[styles.container, style]} {...rest}>
+                    <ThemedText variant="body">+</ThemedText>
+                </View>
+            </Pressable>   
+        </Link>
+    )
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    width: 320,
-    height: 68,
-    marginHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 3,
-  },
-  button: {
-    borderRadius: 10,
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  buttonIcon: {
-    paddingRight: 8,
-  },
-  buttonLabel: {
-    color: '#fff',
-    fontSize: 16,
-  },
+    container: {
+        width: 75,
+        height: 75,
+        borderRadius: 999,
+        backgroundColor: '#0d0e61',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });

@@ -21,7 +21,7 @@ export function RecipeCard ({style, id, title, time, regime, type}: Props) {
         <Link href={{pathname: "/recipe/id", params: {id: id}}} asChild>
             <Pressable android_ripple={{color: colors.header, foreground: true}} style={{borderRadius: 8}}>
                 <Card style={[style, styles.container, {backgroundColor: colors.card}]}>
-                    <ThemedText variant="bodyStrong" color="text" >{title}</ThemedText>
+                    <ThemedText variant="bodyStrong" >{title}</ThemedText>
                     <RecipeDesc 
                         type={type as keyof typeof Colors.regime} 
                         regime={regime as keyof typeof Colors.regime} 

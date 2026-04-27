@@ -23,7 +23,7 @@ export default function UpdateRecipe() {
           <Image source={require("@/assets/images/back.png")} style={styles.logo} />
         </Pressable> 
         <View style={[styles.header, {backgroundColor: colors.header}]}>
-          <ThemedText variant="headline">Go back</ThemedText>
+          <ThemedText variant="header">Go back</ThemedText>
         </View>
         <View>
           <ThemedText>Recette introuvable</ThemedText>
@@ -47,7 +47,7 @@ export default function UpdateRecipe() {
           <Pressable onPress={router.back}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
           </Pressable> 
-          <ThemedText variant="headline">Modifier la recette</ThemedText>
+          <ThemedText variant="header">Modifier la recette</ThemedText>
         </View>
         <Card>
           <Form onSubmit={update} recipe={recipe} submitLabel="Sauvegarder les modifications"/>

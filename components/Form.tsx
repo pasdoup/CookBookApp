@@ -142,7 +142,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                 </Row>
             ))}
         <Pressable onPress={addIngredient}>
-            <ThemedText variant="bodyStrong" color="header">+ Ajouter un ingrédient</ThemedText>
+            <ThemedText variant="bodyStrong">+ Ajouter un ingrédient</ThemedText>
         </Pressable>
         {/*----------------------------------------- Etapes de préparation ----------------------------------------------*/}
         <ThemedText variant="bodyStrong">Etapes de préparation</ThemedText>
@@ -167,7 +167,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                 </Row>
             ))}
         <Pressable onPress={addStep}>
-            <ThemedText variant="bodyStrong" color="header">+ Ajouter une étape</ThemedText>
+            <ThemedText variant="bodyStrong">+ Ajouter une étape</ThemedText>
         </Pressable> 
 
         <Pressable onPress={handleSubmit}>
