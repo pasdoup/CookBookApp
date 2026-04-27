@@ -1,5 +1,4 @@
-import { Colors } from "@/constants/Colors";
-import { useThemeColors } from "@/hooks/useThemeColors";
+import { Colors } from "@/constants";
 import { Image, StyleSheet, ViewProps } from "react-native";
 import { Row } from "./Row";
 import { ThemedText } from "./ThemedText";
@@ -7,22 +6,23 @@ import { ThemedText } from "./ThemedText";
 type Props = ViewProps & {
     style?: ViewProps,
     name: string,
-    color?: keyof typeof Colors.regime,
+    color?: string,
     time?: boolean,
     active?: boolean,
 }
 
 export function Chip ({style, name, color, time, active, ...rest}: Props) {
-    const colors = useThemeColors()
     return (
     <Row 
         gap={4} 
         style={[style, 
                 styles.container, 
                 active ? styles.activeChip : 
-                    color? {backgroundColor: Colors.regime[color].bg} : {backgroundColor: colors.search}]} 
+                    color? {backgroundColor: color} : {backgroundColor: Colors.vanilla}]} 
                 {...rest} >
-        {time ? <Image source={require("@/assets/images/time-left.png")} style={styles.time} /> : null}
+        {time ? 
+            <Image source={require("@/assets/images/time-left.png")} style={styles.time} /> 
+        : null}
         <ThemedText variant="body" >{name}</ThemedText>
     </Row>)
 }
@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     },
     activeChip: {
         borderWidth: 1,
-        backgroundColor: 'red',
+        borderColor: Colors.rose,
+        backgroundColor: Colors.bubblegum,
     }
 });

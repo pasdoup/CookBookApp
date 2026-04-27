@@ -22,17 +22,17 @@ export const Colors = {
 
 
     regimes: {
-        Végé: { bg: '#EAF2EA', text: '#3B6D3A' },
-        Vegan: { bg: '#E8F4E8', text: '#2D6B2D' },
-        Standard: { bg: '#F5EDE8', text: '#C8522A' },
+        Végé: { bg: '#3B6D3A', text: '#E3F0FB' },
+        Vegan: { bg: '#2D6B2D', text: '#F5EDE8' },
+        Standard: { bg: '#C8522A', text: '#FCE4EC' },
     } ,
 
     types: {
-        Entrée:  { bg: '#E3F0FB', text: '#1565C0' },
-        Plat:    { bg: '#F5EDE8', text: '#C8522A' },
-        Dessert: { bg: '#FCE4EC', text: '#C2185B' },
-        Snack:   { bg: '#FFF8E7', text: '#F57F17' },
-        Boisson: { bg: '#E8F5E9', text: '#2E7D32' },
+        Entrée:  { bg: '#1565C0', text: '#FCE4EC' },
+        Plat:    { bg: '#030303', text: '#FCE4EC' },
+        Dessert: { bg: '#C2185B', text: '#FCE4EC' },
+        Snack:   { bg: '#F57F17', text: '#FCE4EC' },
+        Boisson: { bg: '#2E7D32', text: '#FCE4EC' },
     },
 };
 

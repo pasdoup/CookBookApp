@@ -4,9 +4,9 @@ import Svg, { Path } from 'react-native-svg';
 
 
 
-export function HeaderBorder ({ color = Colors.vanilla }: { color?: string }) {
-  const width = 390;
-  const step  = 30; // largeur de chaque créneau
+export function HeaderBorder ({ color = Colors.cream }: { color?: string }) {
+  const width = 490;
+  const step  = 40; // largeur de chaque créneau
   const h     = 16; // hauteur
 
   let d = `M0,${h} `;

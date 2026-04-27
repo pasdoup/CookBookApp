@@ -1,4 +1,5 @@
 import { ButtonNewRecipe } from "@/components/ButtonNewRecipe";
+import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import { EmptyState } from "@/components/EmptyState";
 import { HeaderBorder } from "@/components/HeaderBorder";
@@ -6,6 +7,7 @@ import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemedText } from "@/components/ThemedText";
+import { Colors, Spacing } from "@/constants";
 import type { Recipe, RecipeRegime, RecipeType } from '@/data/types';
 import { RECIPE_REGIMES, RECIPE_TYPES } from '@/data/types';
 import { useRecipes } from "@/hooks/useRecipes";
@@ -41,9 +43,9 @@ export default function Index() {
 
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, {backgroundColor: Colors.bubblegum}]} edges={['top', 'left', 'right']}>
       {/*------------------------ Header ------------------------*/}
-      <View style={[styles.header, {backgroundColor: colors.header}]}>
+      <View style={[styles.header, {backgroundColor: Colors.bubblegum}]}>
         <Row gap={16}>
           <Image source={require("@/assets/images/iconBook.png")} style={styles.logo} />
           <ThemedText variant="header">Mes recettes</ThemedText>
@@ -51,7 +53,7 @@ export default function Index() {
         <HeaderBorder/>
       </View>
       {/*------------------------ Search & Filters ------------------------*/}
-      <View style={[styles.search]}>
+      <Card style={[styles.search]}>
         <SearchBar value={query} onChange={setQuery} />
         <FlatList 
           horizontal 
@@ -74,9 +76,9 @@ export default function Index() {
             </Pressable>} 
           keyExtractor={(item)=> item} 
         />
-      </View>
+      </Card>
       {/*------------------------ Body ------------------------*/}
-      <View style={[styles.body]}>
+      <Card style={[styles.body]}>
         {results.length === 0 ?
           <EmptyState message="Aucune recette trouvé"></EmptyState>
         :
@@ -92,7 +94,7 @@ export default function Index() {
 
         <ButtonNewRecipe style={styles.buttonNewRecipe}/>
 
-      </View>
+      </Card>
     </SafeAreaView>
   );
 }
@@ -101,20 +103,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  header: {
+    padding: Spacing.sm,
+    paddingBottom: Spacing.xl,
+    height: 100,
+  },
   logo: {
     width: 24, 
     height: 24
   },
-  header: {
-    gap: 16,
-    padding: 12,
-  },
   search: {
-    gap: 8,
+    gap: Spacing.xs,
+    paddingBottom: Spacing.lg
   },
   body: {
     flex: 1,
-    borderRadius: 4,
     position: 'relative',
   },
   list: {
@@ -125,6 +128,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: '50%',
-    transform: [{translateX: -37.5}],
+    transform: [{translateX: -90}],
   }
 })

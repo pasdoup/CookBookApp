@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 
 type Props = TextProps & {
     variant?: keyof typeof styles,
-    color?: keyof typeof Colors
+    color?: string
 }
 
 export function ThemedText ({style, variant, color, ...rest}: Props) {
