@@ -1,6 +1,9 @@
+import { Card } from "@/components/Card";
+import { EmptyState } from "@/components/EmptyState";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
+import { Colors, Spacing } from "@/constants";
 import { UNITS } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
@@ -48,134 +51,112 @@ export default function List() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.tint}]} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, {backgroundColor: Colors.mint}]} edges={['top', 'left', 'right']}>
       <ScrollView>
         {/*------------------------ Header ------------------------*/}
-        <View style={[styles.header, {backgroundColor: colors.header}]}>
+        <Card style={styles.header} color={Colors.mint}>
           <Row gap={16}>
             <Image source={require("@/assets/images/list.png")} style={styles.logo} />
-            <ThemedText variant="header" >Liste de course</ThemedText>
+            <ThemedText variant="header">Liste de course</ThemedText>
           </Row>
-        </View>
-        {/*------------------------ Body ------------------------*/}
-         {/* Formulaire d'ajout manuel */}
-      <View >
-        <TextInput
-          placeholder="Ingrédient"
-          value={name}
-          onChangeText={setName}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Quantité"
-          value={quantity}
-          onChangeText={setQuantity}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <Picker 
-          selectedValue={unit}
-          onValueChange={setUnit}
-          placeholder="Unité">
-          {UNITS.map((u) => (
-            <Picker.Item key={u} label={u} value={u} />
-          ))}
-        </Picker>
-        <Pressable onPress={handleAdd}>
-          <View style={styles.buttonRemove}>
-            <ThemedText variant="bodyStrong">Ajouter</ThemedText>
-          </View>
-        </Pressable>
-      </View>
+          <HeaderBorder/>
+        </Card>
+        {/*------------------------ Add item ------------------------*/}
+      <Card >
+        <Row gap={8}>
+          <TextInput
+              placeholder="Ingrédient"
+              value={name}
+              onChangeText={setName}
+              style={[styles.input]}
+            />
+          <TextInput
+            placeholder="Quantité"
+            value={quantity}
+            onChangeText={setQuantity}
+            keyboardType="numeric"
+            style={[styles.input]}
+          />
+          <Picker 
+            selectedValue={unit}
+            onValueChange={setUnit}
+            placeholder="Unité"
+            style={[styles.input]}>
+            {UNITS.map((u) => (
+              <Picker.Item key={u} label={u} value={u} style={[styles.input]}/>
+            ))}
+          </Picker>
+          <Pressable onPress={handleAdd}>
+            <View style={styles.button}>
+              <ThemedText variant="bodyStrong">Ajouter</ThemedText>
+            </View>
+          </Pressable>
+        </Row>
+      </Card>
       {/* Liste */}
-        <View style={[styles.body]}>
+        <Card style={[styles.body]}>
           {shoppingList.length === 0 && (
-            <ThemedText >La liste est vide.</ThemedText>
+            <EmptyState message={"La liste est vide."} />
           )}
           {shoppingList.map((item) => (
-        <View key={item.id} >
-          {editId === item.id ? (
-            <View style={{ flex: 1 }}>
-              <TextInput
-                value={editName}
-                onChangeText={setEditName}
-                style={styles.input}
-              />
-              <TextInput
-                value={editQuantity}
-                onChangeText={setEditQuantity}
-                keyboardType="numeric"
-                style={styles.input}
-              />
+          <Card key={item.id} >
+            {editId === item.id ? (
+              <Row style={{ flex: 1 }}>
+                <TextInput
+                  value={editName}
+                  onChangeText={setEditName}
+                  style={styles.input}
+                />
+                <TextInput
+                  value={editQuantity}
+                  onChangeText={setEditQuantity}
+                  keyboardType="numeric"
+                  style={styles.input}
+                />
 
-              <View >
-                <Picker selectedValue={editUnit} onValueChange={setEditUnit} >
-                  {UNITS.map((u) => (
-                    <Picker.Item key={u} label={u} value={u} />
-                  ))}
-                </Picker>
-              </View>
+                <View >
+                  <Picker selectedValue={editUnit} onValueChange={setEditUnit} >
+                    {UNITS.map((u) => (
+                      <Picker.Item key={u} label={u} value={u} />
+                    ))}
+                  </Picker>
+                </View>
 
-              <Pressable style={styles.buttonRemove} onPress={saveEdit}>
-                <ThemedText >Enregistrer</ThemedText>
-              </Pressable>
+                <Pressable style={styles.button} onPress={saveEdit}>
+                  <ThemedText >Enregistrer</ThemedText>
+                </Pressable>
+              </Row>
+            ) :
+            (
+              <Row>
+                <Pressable onPress={() => toggleShoppingItem(item.id)}>
+              <View style={styles.button}>
+                  <ThemedText variant="bodyStrong">O</ThemedText>
+                </View>
+            </Pressable>
+              <ThemedText style={{textDecorationLine: item.checked===0 ? 'none' : 'line-through'}}>
+                {item.name} — {item.quantity} {item.unit}
+              </ThemedText>
+              <Pressable onPress={() => startEdit(item)}>
+                  <ThemedText style={styles.button}>Modifier</ThemedText>
+                </Pressable>
+            <Pressable onPress={() => removeShoppingItem(item.id)}>
+              <ThemedText>Supprimer</ThemedText>
+            </Pressable>
+              </Row>
+            )}
+        </Card>
+        ))}
+        <View>
+            {shoppingList.length > 0 && (
+          <Pressable onPress={clearList}>
+            <View style={styles.button}>
+              <ThemedText variant="bodyStrong">Réinitialiser la liste</ThemedText>
             </View>
-          ) :
-          (
-            <View>
-              <Pressable onPress={() => toggleShoppingItem(item.id)}>
-            <View style={styles.buttonRemove}>
-                <ThemedText variant="bodyStrong">O</ThemedText>
-              </View>
-          </Pressable>
-            <ThemedText style={{textDecorationLine: item.checked===0 ? 'none' : 'line-through'}}>
-              • {item.name} — {item.quantity} {item.unit}
-            </ThemedText>
-            <Pressable onPress={() => startEdit(item)}>
-                <ThemedText style={styles.buttonRemove}>Modifier</ThemedText>
-              </Pressable>
-          <Pressable onPress={() => removeShoppingItem(item.id)}>
-            <ThemedText>Supprimer</ThemedText>
-          </Pressable>
-            </View>
-          )}
+          </Pressable> 
+            )}
         </View>
-      ))}
-          
-          {/* <Row gap={8}>
-            <TextInput 
-              value={item.quantity} 
-              onChangeText={(text) => setItem({ ...item, quantity: text })}
-              placeholder="Quantité"
-              style={[styles.input, {backgroundColor: colors.search, flex: 1}]}
-              keyboardType="numeric" 
-            />
-            <TextInput 
-              value={item.unity} 
-              onChangeText={(text) => setItem({ ...item, unity: text })} 
-              placeholder="Unité" 
-              style={[styles.input, {backgroundColor: colors.search, flex: 1}]} 
-            />
-            <TextInput 
-              value={item.name} 
-              onChangeText={(text) => setItem({ ...item, name: text })} 
-              placeholder='item' 
-              style={[styles.input, {backgroundColor: colors.search, flex: 1}]} 
-            />
-          </Row>
-          <Pressable onPress={addItem}>
-            <ThemedText variant="bodyStrong" color="header">+ Ajouter un ingrédient</ThemedText>
-          </Pressable> */}
-          <View>
-             {shoppingList.length > 0 && (
-            <Pressable onPress={clearList}>
-              <View style={styles.buttonSave}>
-                <ThemedText variant="bodyStrong">Réinitialiser la liste</ThemedText>
-              </View>
-            </Pressable> 
-             )}
-          </View>
-        </View>
+      </Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -190,8 +171,9 @@ const styles = StyleSheet.create({
     height: 24
   },
   header: {
-    gap: 16,
-    padding: 12,
+    padding: Spacing.sm,
+    paddingBottom: Spacing.xl,
+    height: 100,
   },
   search: {
     gap: 8,
@@ -204,7 +186,7 @@ const styles = StyleSheet.create({
   buttonSave: {
     marginTop: 16,
     padding: 12,
-    backgroundColor: Colors.light.tint,
+    backgroundColor: Colors.mint,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -214,18 +196,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonRemove: {
+  button: {
     padding: 8,
-    backgroundColor: Colors.light.header,
+    backgroundColor: Colors.mint,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     margin: 4,
+    borderColor: Colors.green,
+    borderWidth: 1,
+    borderBottomWidth: 3,
   },
   input: {
     height: 40,
-    borderColor: Colors.light.text,
+    backgroundColor: Colors.vanilla,
+    borderColor: Colors.mint,
     borderWidth: 1,
     borderRadius: 8,
+    flex: 1,
   },
 })
