@@ -1,33 +1,43 @@
-import { Colors } from "@/constants";
-import { Link } from "expo-router";
+import { Radius, Spacing } from "@/constants";
 import { Pressable, StyleSheet, View, ViewProps } from "react-native";
 import { ThemedText } from "./ThemedText";
 
 type Props = ViewProps & {
     style?: ViewProps,
-    label: string,
-    color: keyof typeof Colors
+    title: string,
+    color: string,
+    colorBorder: string,
+    height?: number,
+    width?: number,
+    onSubmit?: () => void,
 }
 
-export function ButtonNewRecipe({style, label, color, ...rest}: Props) {
+export function Button({style, title, color, colorBorder, height=75, width=180, onSubmit, ...rest}: Props) {
     return (
-        <Link href="/recipe/createRecipe" asChild>
-            <Pressable android_ripple={{color: color, foreground: true}} style={{borderRadius: 8}}>
-                <View style={[styles.container, style]} {...rest}>
-                    <ThemedText variant="body">+</ThemedText>
+            <Pressable android_ripple={{color: colorBorder, foreground: true}} style={{borderRadius: 8}} >
+                <View style={[
+                    styles.container, 
+                    style, 
+                    {height: 75,
+                    width: 200,
+                    borderColor: colorBorder,
+                    backgroundColor: color, }]} 
+                    {...rest}>
+                    <ThemedText variant="button" color={colorBorder}>{title}</ThemedText>
                 </View>
             </Pressable>   
-        </Link>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        width: 75,
-        height: 75,
-        borderRadius: 999,
-        backgroundColor: '#0d0e61',
+        paddingHorizontal: Spacing.xl,
+        paddingVertical: Spacing.md,
+        borderRadius: Radius.xl,
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 2,
+        borderBottomWidth: 5,
+        left: '25%'
     },
 });

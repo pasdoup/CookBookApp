@@ -1,9 +1,11 @@
+import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import { EmptyState } from "@/components/EmptyState";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
+import { Colors, Radius, Spacing } from "@/constants";
 import { Recipe, RECIPE_REGIMES, RECIPE_TYPES, TIMES } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
 import { useThemeColors } from "@/hooks/useThemeColors";
@@ -50,50 +52,54 @@ export default function Generator() {
 
   
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, {backgroundColor: Colors.lavander}]} edges={['top', 'left', 'right']}>
     {/*------------------------ Header ------------------------*/}
-    <View style={[styles.header, {backgroundColor: colors.header}]}>
+    <Card style={styles.header} color={Colors.lavander}>
       <Row gap={16}>
         <Image source={require("@/assets/images/dice.png")} style={styles.logo} />
-        <ThemedText variant="header">Quoi manger ?</ThemedText>
+        <ThemedText variant="header">Besoin d'une idée ?</ThemedText>
       </Row>
-    </View>
+      <HeaderBorder/>
+    </Card>
     {/*------------------------ Filters ------------------------*/}
-    <View style={[styles.search]}>
+    <Card style={[styles.search]}>
+      <ThemedText>Type de la recette</ThemedText>
       <FlatList 
         horizontal 
         data={['Tous', ...RECIPE_TYPES]} 
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item}
         renderItem={({item}) => 
-          <Pressable onPress={() => {setType(item); resetFilter();}}><Chip name={item} active={type === item} /></Pressable>} 
-      />
+          <Pressable onPress={() => {setType(item); resetFilter();}}><Chip name={item} active={type === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
+        />
+      <ThemedText>Régime de la recette</ThemedText>
       <FlatList 
         horizontal 
         data={['Tous', ...RECIPE_REGIMES]} 
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-          <Pressable onPress={() => { setRegime(item); resetFilter(); }}><Chip name={item} active={regime === item} /></Pressable>} 
-      />
+          <Pressable onPress={() => { setRegime(item); resetFilter(); }}><Chip name={item} active={regime === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
+        />
+      <ThemedText>Durée de la recette</ThemedText>
       <FlatList 
         horizontal 
         data={TIMES} 
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-          <Pressable onPress={() => { setTime(item); resetFilter(); }}><Chip name={item} active={time === item} /></Pressable>} 
+          <Pressable onPress={() => { setTime(item); resetFilter(); }}><Chip name={`<= ${item}`} active={time === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
       />
-    </View>
+    </Card>
     {/*------------------------ Body ------------------------*/}
-    <View style={[styles.body]}>
-      <View>
-      <Pressable onPress={draw}>
+    <Card style={[styles.body]}>
+      <Card>
+      <Pressable onPress={draw} android_ripple={{color: Colors.purple, foreground: true}} >
         <View style={styles.buttonSave}>
-            <ThemedText variant="bodyStrong">Trouver une recette</ThemedText>
+            <ThemedText variant="button" color={Colors.purple}>Trouver une recette</ThemedText>
         </View>
       </Pressable> 
-      </View>
+    </Card>
 
       {noResult && (
         <View style={styles.noRecipe}>
@@ -103,15 +109,17 @@ export default function Generator() {
 
       {result && (
         <RecipeCard 
-          id={result.id} 
-          title={result.title} 
-          time={result.time} 
-          regime={result.regime} 
-          type={result.type} 
-          style={{height: 'auto', minHeight: 80}} />
+            id={result.id}
+            title={result.title}
+            time={result.time}
+            regime={result.regime}
+            type={result.type}
+            style={{ height: 'auto', minHeight: 80, }} 
+            color={Colors.lavanderLight} 
+            colorBorder={Colors.purple} />
           
         )}
-    </View>
+    </Card>
   </SafeAreaView>
   );
 }
@@ -125,8 +133,9 @@ const styles = StyleSheet.create({
     height: 24
   },
   header: {
-    gap: 16,
-    padding: 12,
+    padding: Spacing.sm,
+    paddingBottom: Spacing.xl,
+    height: 100,
   },
   search: {
     gap: 8,
@@ -136,17 +145,32 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 12,
   },
-  buttonSave: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: Colors.light.tint,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    },
   noRecipe: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  buttonSave: {
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderBottomWidth: 5,
+    left: '25%',
+    borderColor: Colors.purple,
+    backgroundColor: Colors.lavander,
+    height: 75,
+    width: 200,
+  },
+  pressSave: {
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.xl,
+    height: 75,
+    width: 200,
+    borderColor: Colors.purple,
+    backgroundColor: Colors.lavander,
   },
 })

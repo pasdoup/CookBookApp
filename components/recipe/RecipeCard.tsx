@@ -12,13 +12,15 @@ type Props =  {
     time: number,
     regime: string,
     type: string,
+    color: string,
+    colorBorder: string,
 }
 
-export function RecipeCard ({style, id, title, time, regime, type}: Props) {
+export function RecipeCard ({style, id, title, time, regime, type, color, colorBorder}: Props) {
     return (
         <Link href={{pathname: "/recipe/id", params: {id: id}}} asChild>
-            <Pressable android_ripple={{color: Colors.bubblegum, foreground: true}} style={{borderRadius: 8}}>
-                <Card style={[style, styles.container]} color={Colors.bubblegumLight}>
+            <Pressable android_ripple={{color: color, foreground: true}} style={{borderRadius: 8}}>
+                <Card style={[style, styles.container, {borderColor: colorBorder}]} color={color}>
                     <ThemedText variant="bodyStrong" >{title}</ThemedText>
                     <RecipeDesc 
                         type={type as keyof typeof Colors.regimes} 
@@ -37,7 +39,6 @@ const styles = StyleSheet.create({
         height: 80,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: Colors.rose,
         borderBottomWidth: 3,
     },
     title:{

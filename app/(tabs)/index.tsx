@@ -1,7 +1,7 @@
+
 import { ButtonNewRecipe } from "@/components/ButtonNewRecipe";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
-import { EmptyState } from "@/components/EmptyState";
 import { HeaderBorder } from "@/components/HeaderBorder";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
@@ -11,15 +11,13 @@ import { Colors, Spacing } from "@/constants";
 import type { Recipe, RecipeRegime, RecipeType } from '@/data/types';
 import { RECIPE_REGIMES, RECIPE_TYPES } from '@/data/types';
 import { useRecipes } from "@/hooks/useRecipes";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
+import { FlatList, Image, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ALL = 'Tous';
 
 export default function Index() {
-  const colors = useThemeColors()
 
   const { searchRecipes } = useRecipes();
   const [query,        setQuery]        = useState('');
@@ -45,13 +43,13 @@ export default function Index() {
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.bubblegum}]} edges={['top', 'left', 'right']}>
       {/*------------------------ Header ------------------------*/}
-      <View style={[styles.header, {backgroundColor: Colors.bubblegum}]}>
+      <Card style={styles.header} color={Colors.bubblegum}>
         <Row gap={16}>
           <Image source={require("@/assets/images/iconBook.png")} style={styles.logo} />
           <ThemedText variant="header">Mes recettes</ThemedText>
         </Row>
         <HeaderBorder/>
-      </View>
+      </Card>
       {/*------------------------ Search & Filters ------------------------*/}
       <Card style={[styles.search]}>
         <SearchBar value={query} onChange={setQuery} />
@@ -62,7 +60,7 @@ export default function Index() {
           keyExtractor={(item)=> item} 
           renderItem={({item}) => 
             <Pressable onPress={() =>  setTypeFilter(item as RecipeType | typeof ALL)}>
-              <Chip name={item} active={typeFilter === item} />
+              <Chip name={item} active={typeFilter === item}  colorActive={Colors.bubblegum} colorBorder={Colors.rose}/>
             </Pressable>
           } 
         />
@@ -72,28 +70,22 @@ export default function Index() {
           contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
           renderItem={({item}) => 
             <Pressable onPress={() => setRegimeFilter(item as RecipeRegime | typeof ALL)}>
-              <Chip name={item} active={regimeFilter === item} />
+              <Chip name={item} active={regimeFilter === item} colorActive={Colors.bubblegum} colorBorder={Colors.rose} />
             </Pressable>} 
           keyExtractor={(item)=> item} 
         />
       </Card>
       {/*------------------------ Body ------------------------*/}
       <Card style={[styles.body]}>
-        {results.length === 0 ?
-          <EmptyState message="Aucune recette trouvé"></EmptyState>
-        :
           <FlatList 
             data={results} 
             contentContainerStyle={[styles.list]}
             renderItem={({item}) => 
-                <RecipeCard id={item.id} title={item.title} time={item.time} type={item.type} regime={item.regime} />
+                <RecipeCard id={item.id} title={item.title} time={item.time} type={item.type} regime={item.regime} color={Colors.bubblegumLight} colorBorder={Colors.rose} />
             } 
             keyExtractor={(item)=> item.id.toString() }
           />
-        }
-
-        <ButtonNewRecipe style={styles.buttonNewRecipe}/>
-
+        <ButtonNewRecipe/>
       </Card>
     </SafeAreaView>
   );
@@ -124,10 +116,4 @@ const styles = StyleSheet.create({
     gap: 8,
     padding: 12,
   },
-  buttonNewRecipe: {
-    position: 'absolute',
-    bottom: 20,
-    left: '50%',
-    transform: [{translateX: -90}],
-  }
 })
