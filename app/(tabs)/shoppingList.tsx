@@ -6,14 +6,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors, Spacing } from "@/constants";
 import { UNITS } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function List() {
-  const colors = useThemeColors()
   const { shoppingList, toggleShoppingItem, removeShoppingItem, clearList, addItemToShoppingList, updateShoppingItem } = useRecipes();
 
   const [name, setName] = useState("");

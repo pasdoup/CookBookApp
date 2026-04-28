@@ -1,6 +1,5 @@
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/constants";
 import { emptyIngredient, Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeInput, RecipeRegime, RecipeType, UNITS } from "@/data/types";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
@@ -16,7 +15,6 @@ type Props = {
 }
 
 export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}: Props) {
-    const colors = useThemeColors()
     const [submitting, setSubmitting] = useState(false);
 
     const [title, setTitle] = useState(recipe?.title || '')
@@ -76,11 +74,11 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
     <View>
         {/*------------------------------------------------ Titre ------------------------------------------------------*/}
         <ThemedText variant="bodyStrong">Titre</ThemedText>
-        <TextInput value={title} onChangeText={setTitle} placeholder="Titre de la recette" style={[styles.input, {backgroundColor: colors.search}]} />
+        <TextInput value={title} onChangeText={setTitle} placeholder="Titre de la recette" style={[styles.input, {backgroundColor: Colors.vanilla}]} />
 
         {/*----------------------------------------- Temps de préparation ----------------------------------------------*/}
         <ThemedText variant="bodyStrong">Temps de préparation en minutes</ThemedText>
-        <TextInput value={time.toString()} onChangeText={setTime} placeholder="30" style={[styles.input, {backgroundColor: colors.search}]} keyboardType="numeric"/>    
+        <TextInput value={time.toString()} onChangeText={setTime} placeholder="30" style={[styles.input, {backgroundColor: Colors.vanilla}]} keyboardType="numeric"/>    
 
         {/*-------------------------------------------- Type et régime -------------------------------------------------*/}
         <ThemedText variant="bodyStrong">Type de la recette</ThemedText>
@@ -90,7 +88,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
             contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
             renderItem={({item}) => 
                 <Pressable onPress={() => setType(item)}>
-                    <Chip name={item} active={type === item} />
+                    <Chip name={item} active={type === item} colorActive={Colors.peach} colorBorder={Colors.orange} />
                 </Pressable>} 
             keyExtractor={(item)=> item} 
         />
@@ -101,7 +99,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
             contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
             renderItem={({item}) => 
                 <Pressable onPress={() => setRegime(item)}>
-                    <Chip name={item} active={regime === item} />
+                    <Chip name={item} active={regime === item} colorActive={Colors.peach} colorBorder={Colors.orange} />
                 </Pressable>} 
             keyExtractor={(item)=> item} 
         />
@@ -114,13 +112,13 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                         value={ingredient.quantity === 0 ? '' : String(ingredient.quantity)} 
                         onChangeText={(text) => updateIngredient(index, 'quantity', text === '' ? 0 : parseFloat(text) || 0)}
                         placeholder="Quantité" 
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]}
+                        style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]}
                         keyboardType="numeric" />
                     <Picker 
                         selectedValue={ingredient.unit}
                         onValueChange={(text) => updateIngredient(index, 'unit', text)}
                         placeholder="Unité"
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]}>
+                        style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]}>
                         {UNITS.map((u) => (
                             <Picker.Item key={u} label={u} value={u} />
                         ))}
@@ -131,7 +129,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                         value={ingredient.name} 
                         onChangeText={(text) => updateIngredient(index, 'name', text)}
                         placeholder={`Ingrédient ${index + 1}`} 
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]} />
+                        style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]} />
                     {ingredients.length > 0 && (
                         <Pressable onPress={() => removeIngredient(index)}>
                             <View style={styles.buttonRemove}>
@@ -155,7 +153,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                         value={step}
                         onChangeText={(text) => updateStep(index, text)}
                         placeholder={`Étape ${index + 1}`}
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]}
+                        style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]}
                     />
                     {steps.length > 0 && (
                         <Pressable onPress={() => removeStep(index)}>
@@ -182,13 +180,13 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
 const styles = StyleSheet.create({
     input: {
         height: 40,
-        borderColor: Colors.light.text,
+        borderColor: Colors.orange,
         borderWidth: 1,
         borderRadius: 8,
     },
     buttonRemove: {
         padding: 8,
-        backgroundColor: Colors.light.header,
+        backgroundColor: Colors.peach,
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
@@ -197,7 +195,7 @@ const styles = StyleSheet.create({
     buttonSave: {
         marginTop: 16,
         padding: 12,
-        backgroundColor: Colors.light.header,
+        backgroundColor: Colors.peach,
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',

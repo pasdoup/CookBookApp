@@ -8,14 +8,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors, Radius, Spacing } from "@/constants";
 import { Recipe, RECIPE_REGIMES, RECIPE_TYPES, TIMES } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { useCallback, useState } from "react";
 import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function Generator() {
-  const colors = useThemeColors()
   const { recipes } = useRecipes();
 
   const [regime,      setRegime]      = useState('Tous');
