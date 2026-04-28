@@ -1,73 +1,123 @@
+import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
+import { EmptyState } from "@/components/EmptyState";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
-import { Regimes } from "@/constants/Regimes";
-import { Types } from "@/constants/Types";
-import { getRandomRecipeId } from "@/functions/RecipeFunctions";
-import { useThemeColors } from "@/hooks/useThemeColors";
-import { useState } from "react";
+import { Colors, Radius, Spacing } from "@/constants";
+import { Recipe, RECIPE_REGIMES, RECIPE_TYPES, TIMES } from "@/data/types";
+import { useRecipes } from "@/hooks/useRecipes";
+import { useCallback, useState } from "react";
 import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+
 export default function Generator() {
-  const colors = useThemeColors()
-  const [activeTypes, setActiveTypes] = useState('Tous')
-  const [activeRegimes, setActiveRegimes] = useState('Tous')
-  const [idRecipeId, setIdRecipeId] = useState<number | null>(null)
+  const { recipes } = useRecipes();
+
+  const [regime,      setRegime]      = useState('Tous');
+  const [type,        setType]        = useState('Tous');
+  const [time,     setTime]    = useState('Toutes');
+  const [result,      setResult]      = useState<Recipe | null>(null);
+  const [noResult,    setNoResult]    = useState(false);
+  const [history,     setHistory]     = useState<number[]>([]);
   
-  const random = () => {
-    setIdRecipeId(getRandomRecipeId(activeTypes, activeRegimes))
-  }
+  const getFiltered = useCallback((): Recipe[] => {
+    let list = recipes;
+    if (regime !== 'Tous') list = list.filter(r => r.regime === regime);
+    if (type   !== 'Tous') list = list.filter(r => r.type   === type);
+    if (time   !== 'Toutes') list = list.filter(r => r.time   <= Number(time));
+    return list;
+  }, [recipes, regime, type, time]);
+
+  const draw = useCallback(() => {
+    const filtered = getFiltered();
+    if (filtered.length === 0) { setResult(null); setNoResult(true); return; }
+
+    let pool = filtered.filter(r => !history.includes(r.id));
+    if (pool.length === 0) { setHistory([]); pool = filtered; }
+
+    const picked = pool[Math.floor(Math.random() * pool.length)];
+    setHistory(prev => [...prev, picked.id]);
+    setResult(picked);
+    setNoResult(false);
+
+  }, [getFiltered, history]);
+
+  const resetFilter = () => { setResult(null); setNoResult(false); };
+
+
   
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={[styles.container, {backgroundColor: Colors.lavander}]} edges={['top', 'left', 'right']}>
     {/*------------------------ Header ------------------------*/}
-    <View style={[styles.header, {backgroundColor: colors.header}]}>
+    <Card style={styles.header} color={Colors.lavander}>
       <Row gap={16}>
         <Image source={require("@/assets/images/dice.png")} style={styles.logo} />
-        <ThemedText variant="headline" color="text">Quoi manger ?</ThemedText>
+        <ThemedText variant="header">Besoin d'une idée ?</ThemedText>
       </Row>
-    </View>
+      <HeaderBorder/>
+    </Card>
     {/*------------------------ Filters ------------------------*/}
-    <View style={[styles.search]}>
+    <Card style={[styles.search]}>
+      <ThemedText>Type de la recette</ThemedText>
       <FlatList 
         horizontal 
-        data={Types} 
+        data={['Tous', ...RECIPE_TYPES]} 
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item}
         renderItem={({item}) => 
-          <Pressable onPress={() => setActiveTypes(item)}><Chip name={item} active={activeTypes === item} /></Pressable>} 
-      />
+          <Pressable onPress={() => {setType(item); resetFilter();}}><Chip name={item} active={type === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
+        />
+      <ThemedText>Régime de la recette</ThemedText>
       <FlatList 
         horizontal 
-        data={Regimes} 
+        data={['Tous', ...RECIPE_REGIMES]} 
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-          <Pressable onPress={() => setActiveRegimes(item)}><Chip name={item} active={activeRegimes === item} /></Pressable>} 
+          <Pressable onPress={() => { setRegime(item); resetFilter(); }}><Chip name={item} active={regime === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
+        />
+      <ThemedText>Durée de la recette</ThemedText>
+      <FlatList 
+        horizontal 
+        data={TIMES} 
+        contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
+        keyExtractor={(item)=> item} 
+        renderItem={({item}) => 
+          <Pressable onPress={() => { setTime(item); resetFilter(); }}><Chip name={`<= ${item}`} active={time === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
       />
-    </View>
+    </Card>
     {/*------------------------ Body ------------------------*/}
-    <View style={[styles.body]}>
-      <View>
-      <Pressable onPress={random}>
+    <Card style={[styles.body]}>
+      <Card>
+      <Pressable onPress={draw} android_ripple={{color: Colors.purple, foreground: true}} >
         <View style={styles.buttonSave}>
-            <ThemedText variant="bodyStrong">Trouver une recette</ThemedText>
+            <ThemedText variant="button" color={Colors.purple}>Trouver une recette</ThemedText>
         </View>
       </Pressable> 
-      </View>
-      <View style={{flex: 1}}>
-      {idRecipeId ? (
-        <RecipeCard id={idRecipeId} style={{height: 'auto', minHeight: 80}} />
-      ) : (
+    </Card>
+
+      {noResult && (
         <View style={styles.noRecipe}>
-          <ThemedText variant="body" color="text">Aucune recette trouvée avec ces filtres</ThemedText>
+          <EmptyState message="Aucune recette trouvé"></EmptyState>
         </View>
       )}
-      </View>
-    </View>
+
+      {result && (
+        <RecipeCard 
+            id={result.id}
+            title={result.title}
+            time={result.time}
+            regime={result.regime}
+            type={result.type}
+            style={{ height: 'auto', minHeight: 80, }} 
+            color={Colors.lavanderLight} 
+            colorBorder={Colors.purple} />
+          
+        )}
+    </Card>
   </SafeAreaView>
   );
 }
@@ -81,8 +131,9 @@ const styles = StyleSheet.create({
     height: 24
   },
   header: {
-    gap: 16,
-    padding: 12,
+    padding: Spacing.sm,
+    paddingBottom: Spacing.xl,
+    height: 100,
   },
   search: {
     gap: 8,
@@ -92,17 +143,32 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 12,
   },
-  buttonSave: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: Colors.light.tint,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    },
   noRecipe: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  buttonSave: {
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderBottomWidth: 5,
+    left: '25%',
+    borderColor: Colors.purple,
+    backgroundColor: Colors.lavander,
+    height: 75,
+    width: 200,
+  },
+  pressSave: {
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.xl,
+    height: 75,
+    width: 200,
+    borderColor: Colors.purple,
+    backgroundColor: Colors.lavander,
   },
 })

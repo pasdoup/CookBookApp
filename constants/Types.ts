@@ -1,1 +1,0 @@
-export const Types = ['Tous', 'Entrée', 'Plat', 'Dessert', 'Snack', 'Boisson'];

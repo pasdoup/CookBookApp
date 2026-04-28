@@ -1,37 +1,46 @@
-import { Colors } from "@/constants/Colors"
-import { useThemeColors } from "@/hooks/useThemeColors"
+import { FontFamily, FontSize } from "@/constants"
 import { StyleSheet, Text, TextProps } from "react-native"
 
 const styles = StyleSheet.create({
     body: {
-        fontSize: 10,
-        lineHeight: 16,
+        fontSize: FontSize.body,
+        fontFamily: FontFamily.body,
+        fontWeight: 400,
+    },
+    small: {
+        fontSize: FontSize.small,
+        fontFamily: FontFamily.body,
+        fontWeight: 400,
+    },
+    header: {
+        fontSize: FontSize.header1,
+        fontFamily: FontFamily.header,
+        fontWeight: 700,
+    },
+    header2: {
+        fontSize: FontSize.header2,
+        fontFamily: FontFamily.header,
+        fontWeight: 500,
+    },
+    button: {
+        fontSize: FontSize.body,
+        fontFamily: FontFamily.button,
+        fontWeight: 600,
     },
     bodyStrong: {
-        fontSize: 10,
-        lineHeight: 16,
-        fontWeight: "bold"
+        fontSize: FontSize.xl,
+        fontFamily: FontFamily.body,
+        fontWeight: 400,
+        
     },
-    headline: {
-        fontSize: 24,
-        lineHeight: 32,
-        fontWeight: "bold",
-    },
-    newRecipe: {
-        fontSize: 24,
-        lineHeight: 32,
-        fontWeight: "bold",
-        color: '#fff',
-    }
 })
 
 type Props = TextProps & {
     variant?: keyof typeof styles,
-    color?: keyof typeof Colors["light"]
+    color?: string
 }
 
 export function ThemedText ({style, variant, color, ...rest}: Props) {
-    const colors = useThemeColors()
-    return (<Text style={[style, styles[variant ?? 'body'], color ? {color: colors[color]} : {}]}{...rest}/>);
+    return (<Text style={[style, styles[variant ?? 'body'], color ? {color: color} : {}]}{...rest}/>);
 }
 

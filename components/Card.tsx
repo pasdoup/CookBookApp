@@ -1,16 +1,10 @@
-import { useThemeColors } from "@/hooks/useThemeColors";
-import { StyleSheet, View, ViewProps } from "react-native";
+import { Colors } from "@/constants";
+import { View, ViewProps } from "react-native";
 
-type Props = ViewProps
-
-export function Card ({style, ...rest}: Props) {
-  const colors = useThemeColors()
-  return <View style={[style, styles.container ]} {...rest} />
+type Props = ViewProps & {
+  color?: string
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 4, 
-    borderRadius: 8,
-  },
-})
+export function Card ({style, color, ...rest}: Props) {
+  return <View style={[style,  color ? {backgroundColor: color} : {backgroundColor: Colors.cream}  ]} {...rest} />
+}

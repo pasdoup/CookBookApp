@@ -1,38 +1,40 @@
-import { Colors } from "@/constants/Colors";
-import { useThemeColors } from "@/hooks/useThemeColors";
-import { Ingredient } from "@/types/Ingredient";
-import { Recipe } from "@/types/Recipe";
+import { Colors } from "@/constants";
+import { emptyIngredient, Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeInput, RecipeRegime, RecipeType, UNITS } from "@/data/types";
+import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
 import { Chip } from "./Chip";
 import { Row } from "./Row";
 import { ThemedText } from "./ThemedText";
 
-const regimes = ['Standard', 'Végé', 'Vegan'];
-const types = ['Entrée', 'Plat', 'Dessert', 'Snack', 'Boisson'];
 
 type Props = {
-    recipe?: Recipe,
-    onSubmit: (value: string) => void
+    recipe?: Partial<RecipeInput>,
+    onSubmit: (payload: RecipeInput) => Promise<void>,
+    submitLabel?: string,
 }
 
-export default function Form({recipe, onSubmit}: Props) {
-    const colors = useThemeColors()
+export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}: Props) {
+    const [submitting, setSubmitting] = useState(false);
 
     const [title, setTitle] = useState(recipe?.title || '')
-    const [time, setTime] = useState(recipe?.time || '')   
-    const [type, setType] = useState(recipe?.type || 'Plat')
-    const [regime, setRegime] = useState(recipe?.regime || 'Standard')
-    const [ingredients, setIngredients] = useState(recipe?.ingredients?.length ? recipe.ingredients : [{ quantity: '', unity: '', name: '' }])
-    const [steps, setSteps] = useState(recipe?.steps?.length ? recipe.steps : [''])
+    const [time, setTime] = useState(String(recipe?.time || ''))
+    const [type, setType] = useState<RecipeType>(recipe?.type || 'Plat')
+    const [regime, setRegime] = useState<RecipeRegime>(recipe?.regime || 'Standard')
+    const [ingredients, setIngredients] = useState<Ingredient[]>(
+    recipe.ingredients?.length ? recipe.ingredients : [emptyIngredient()]
+  );
+    const [steps, setSteps] = useState<string[]>(recipe?.steps?.length ? recipe.steps : [''])
 
 
     const addIngredient = () => {
-        setIngredients((prev) => [...prev, { quantity: '', unity: '', name: '' }])
+        setIngredients((prev) => [...prev, emptyIngredient()])
     }
     const removeIngredient = (id: number) => {
         setIngredients((prev) => prev.filter((_, i) => i !== id))
     }
+    const updateIngredient = (i: number, field: keyof Ingredient, val: string | number) =>
+    setIngredients(prev => prev.map((ing, idx) => idx === i ? { ...ing, [field]: val } : ing));
 
     const addStep = () => {
         setSteps((prev) => [...prev, ''])
@@ -44,51 +46,60 @@ export default function Form({recipe, onSubmit}: Props) {
         setSteps((prev) => prev.map((step, i) => i === index ? text : step))
     }
 
-    const save = () => {
-        if (!title.trim() || !time || ingredients.some((ing: Ingredient) => !ing.name.trim()) || steps.some((step: string) => !step.trim())) {
-            alert("Veuillez remplir tous les champs.")
-            return;
-        }
-        onSubmit(JSON.stringify({
-            title,
-            time,  
+    const handleSubmit = async () => {
+        if (!title.trim()) { Alert.alert('Champ requis', 'Le titre est obligatoire.'); return; }
+        const validIngredients = ingredients.filter(i => i.name.trim() !== '');
+        if (validIngredients.length === 0) { Alert.alert('Champ requis', 'Ajoutez au moins un ingrédient.'); return; }
+
+        setSubmitting(true);
+        try {
+        await onSubmit({
+            title: title.trim(),
+            time:  parseInt(time) || 30,
             type,
             regime,
-            ingredients,
-            steps
-        }))
-    }
+            ingredients: validIngredients.map(i => ({
+            name:     i.name.trim(),
+            quantity: Number(i.quantity) || 0,
+            unit:     i.unit.trim(),
+            })),
+            steps: steps.filter(s => s.trim()),
+        });
+        } finally {
+        setSubmitting(false);
+        }
+    };
 
   return (
     <View>
         {/*------------------------------------------------ Titre ------------------------------------------------------*/}
         <ThemedText variant="bodyStrong">Titre</ThemedText>
-        <TextInput value={title} onChangeText={setTitle} placeholder="Titre de la recette" style={[styles.input, {backgroundColor: colors.search}]} />
+        <TextInput value={title} onChangeText={setTitle} placeholder="Titre de la recette" style={[styles.input, {backgroundColor: Colors.vanilla}]} />
 
         {/*----------------------------------------- Temps de préparation ----------------------------------------------*/}
         <ThemedText variant="bodyStrong">Temps de préparation en minutes</ThemedText>
-        <TextInput value={time.toString()} onChangeText={setTime} placeholder="30" style={[styles.input, {backgroundColor: colors.search}]} keyboardType="numeric"/>    
+        <TextInput value={time.toString()} onChangeText={setTime} placeholder="30" style={[styles.input, {backgroundColor: Colors.vanilla}]} keyboardType="numeric"/>    
 
         {/*-------------------------------------------- Type et régime -------------------------------------------------*/}
         <ThemedText variant="bodyStrong">Type de la recette</ThemedText>
         <FlatList 
             horizontal 
-            data={types} 
+            data={RECIPE_TYPES} 
             contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
             renderItem={({item}) => 
                 <Pressable onPress={() => setType(item)}>
-                    <Chip name={item} active={type === item} />
+                    <Chip name={item} active={type === item} colorActive={Colors.peach} colorBorder={Colors.orange} />
                 </Pressable>} 
             keyExtractor={(item)=> item} 
         />
         <ThemedText variant="bodyStrong">Régime alimentaire</ThemedText>
         <FlatList 
             horizontal 
-            data={regimes} 
+            data={RECIPE_REGIMES} 
             contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
             renderItem={({item}) => 
                 <Pressable onPress={() => setRegime(item)}>
-                    <Chip name={item} active={regime === item} />
+                    <Chip name={item} active={regime === item} colorActive={Colors.peach} colorBorder={Colors.orange} />
                 </Pressable>} 
             keyExtractor={(item)=> item} 
         />
@@ -98,21 +109,27 @@ export default function Form({recipe, onSubmit}: Props) {
                 <Row key={index}>
                     <View style={styles.ingrDot} />
                     <TextInput 
-                        value={ingredient.quantity} 
-                        onChangeText={(text) => setIngredients((prev) => prev.map((ing, i) => i === index ? { ...ing, quantity: text } : ing))}
+                        value={ingredient.quantity === 0 ? '' : String(ingredient.quantity)} 
+                        onChangeText={(text) => updateIngredient(index, 'quantity', text === '' ? 0 : parseFloat(text) || 0)}
                         placeholder="Quantité" 
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]}
+                        style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]}
                         keyboardType="numeric" />
-                    <TextInput 
-                        value={ingredient.unity} 
-                        onChangeText={(text) => setIngredients((prev) => prev.map((ing, i) => i === index ? { ...ing, unity: text } : ing))}
-                        placeholder="Unité" 
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]} />
+                    <Picker 
+                        selectedValue={ingredient.unit}
+                        onValueChange={(text) => updateIngredient(index, 'unit', text)}
+                        placeholder="Unité"
+                        style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]}>
+                        {UNITS.map((u) => (
+                            <Picker.Item key={u} label={u} value={u} />
+                        ))}
+                    </Picker>
+                    
+
                     <TextInput 
                         value={ingredient.name} 
-                        onChangeText={(text) => setIngredients((prev) => prev.map((ing, i) => i === index ? { ...ing, name: text } : ing))}
+                        onChangeText={(text) => updateIngredient(index, 'name', text)}
                         placeholder={`Ingrédient ${index + 1}`} 
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]} />
+                        style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]} />
                     {ingredients.length > 0 && (
                         <Pressable onPress={() => removeIngredient(index)}>
                             <View style={styles.buttonRemove}>
@@ -123,7 +140,7 @@ export default function Form({recipe, onSubmit}: Props) {
                 </Row>
             ))}
         <Pressable onPress={addIngredient}>
-            <ThemedText variant="bodyStrong" color="header">+ Ajouter un ingrédient</ThemedText>
+            <ThemedText variant="bodyStrong">+ Ajouter un ingrédient</ThemedText>
         </Pressable>
         {/*----------------------------------------- Etapes de préparation ----------------------------------------------*/}
         <ThemedText variant="bodyStrong">Etapes de préparation</ThemedText>
@@ -136,7 +153,7 @@ export default function Form({recipe, onSubmit}: Props) {
                         value={step}
                         onChangeText={(text) => updateStep(index, text)}
                         placeholder={`Étape ${index + 1}`}
-                        style={[styles.input, {backgroundColor: colors.search, flex: 1}]}
+                        style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]}
                     />
                     {steps.length > 0 && (
                         <Pressable onPress={() => removeStep(index)}>
@@ -148,12 +165,12 @@ export default function Form({recipe, onSubmit}: Props) {
                 </Row>
             ))}
         <Pressable onPress={addStep}>
-            <ThemedText variant="bodyStrong" color="header">+ Ajouter une étape</ThemedText>
+            <ThemedText variant="bodyStrong">+ Ajouter une étape</ThemedText>
         </Pressable> 
 
-        <Pressable onPress={save}>
+        <Pressable onPress={handleSubmit}>
             <View style={styles.buttonSave}>
-                <ThemedText variant="bodyStrong">Enregistrer</ThemedText>
+                <ThemedText variant="bodyStrong">{submitting ? 'Enregistrement…' : submitLabel}</ThemedText>
             </View>
         </Pressable> 
     </View>
@@ -163,13 +180,13 @@ export default function Form({recipe, onSubmit}: Props) {
 const styles = StyleSheet.create({
     input: {
         height: 40,
-        borderColor: Colors.light.text,
+        borderColor: Colors.orange,
         borderWidth: 1,
         borderRadius: 8,
     },
     buttonRemove: {
         padding: 8,
-        backgroundColor: Colors.light.header,
+        backgroundColor: Colors.peach,
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
@@ -178,7 +195,7 @@ const styles = StyleSheet.create({
     buttonSave: {
         marginTop: 16,
         padding: 12,
-        backgroundColor: Colors.light.header,
+        backgroundColor: Colors.peach,
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',

@@ -1,5 +1,4 @@
-import { Colors } from "@/constants/Colors";
-import { useThemeColors } from "@/hooks/useThemeColors";
+import { Colors } from "@/constants";
 import { Image, StyleSheet, ViewProps } from "react-native";
 import { Row } from "./Row";
 import { ThemedText } from "./ThemedText";
@@ -7,21 +6,29 @@ import { ThemedText } from "./ThemedText";
 type Props = ViewProps & {
     style?: ViewProps,
     name: string,
-    color?: keyof typeof Colors.regime,
+    color?: string,
+    colorActive?: string,
+    colorBorder?: string,
     time?: boolean,
     active?: boolean,
 }
 
-export function Chip ({style, name, color, time, active, ...rest}: Props) {
-    const colors = useThemeColors()
+export function Chip ({style, name, color, colorActive, colorBorder, time, active, ...rest}: Props) {
     return (
     <Row 
         gap={4} 
         style={[style, 
                 styles.container, 
-                active ? styles.activeChip : color? {backgroundColor: Colors.regime[color].bg} : {backgroundColor: colors.search}]} {...rest} >
-        {time ? <Image source={require("@/assets/images/time-left.png")} style={styles.time} /> : null}
-        <ThemedText variant="body" >{name}</ThemedText>
+                active ? 
+                    colorActive? {backgroundColor: colorActive, borderColor: colorBorder, borderWidth: 1} : {backgroundColor: Colors.vanilla} 
+                : color? 
+                    {backgroundColor: color} 
+                    : {backgroundColor: Colors.vanilla}]} 
+                {...rest} >
+        {time ? 
+            <Image source={require("@/assets/images/time-left.png")} style={styles.time} /> 
+        : null}
+        <ThemedText variant="body" >{name === "<= Toutes" ? "Toutes" : name}</ThemedText>
     </Row>)
 }
 
@@ -39,8 +46,5 @@ const styles = StyleSheet.create({
         height: 12,
         marginRight: 4,
     },
-    activeChip: {
-        borderWidth: 1,
-        backgroundColor: 'red',
-    }
+
 });

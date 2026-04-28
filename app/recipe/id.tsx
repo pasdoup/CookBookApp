@@ -1,83 +1,83 @@
 import { Card } from "@/components/Card";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { RecipeDesc } from "@/components/recipe/RecipeDesc";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
-import { addItems } from "@/functions/ItemFunctions";
-import { deleteRecipe, getRecipeById } from "@/functions/RecipeFunctions";
-import { useThemeColors } from "@/hooks/useThemeColors";
+import { Colors, Spacing } from "@/constants";
+import { formatIngredient } from "@/data/types";
+import { useRecipes } from "@/hooks/useRecipes";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Recipe() {
   const params = useLocalSearchParams()
-  const colors = useThemeColors()
-  const recipe = getRecipeById(Number(params.id))
-  const recipeColor = recipe?.type as keyof typeof Colors.type
-  const ingredients = recipe?.ingredients || [{ quantity: '', unity: '', name: '' }]
-  const steps = recipe?.steps || []
+  const { getRecipe, deleteRecipe, addRecipeToShoppingList } = useRecipes();
 
-  const addRecipeToList = () => {
-    alert("Ajouter les ingrédients de cette recette à la liste de course ?") 
-    addItems(ingredients.map(ing => ({ ...ing, isActive: true })))
-  }
+  const recipe = getRecipe(Number(params.id));
 
-  const deleteRecipeById = (id: number) => { 
-    Alert.alert("Êtes-vous sûr de vouloir supprimer cette recette ?", "", 
-      [
-        { text: "Annuler", style: "cancel" },
-        { text: "Supprimer", style: "destructive", onPress: () => { 
-            deleteRecipe(id)
-            router.dismissAll()
-        } },
-      ]
-    )
-  }
 
   if (!recipe) {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={[ {backgroundColor: Colors.peach}]}>
         <Pressable onPress={router.dismissAll}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
         </Pressable> 
-        <View style={[styles.header, {backgroundColor: colors.header}]}>
-          <ThemedText variant="headline">Go back</ThemedText>
+        <View style={[styles.header, {backgroundColor: Colors.peach}]}>
+          <ThemedText variant="header">Go back</ThemedText>
         </View>
         <View>
-          <Text>Recette introuvable</Text>
+          <ThemedText>Recette introuvable</ThemedText>
         </View>
       </SafeAreaView>
     );
   }
 
+    const handleDelete = () => {
+    Alert.alert(
+      'Supprimer la recette',
+      `Voulez-vous vraiment supprimer "${recipe.title}" ?`,
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: async () => {
+            await deleteRecipe(recipe.id);
+            router.dismissAll()
+          },
+        },
+      ]
+    );
+  };
+
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={[ {backgroundColor: Colors.peach}]}>
+      <ScrollView >
         {/*------------------------ Header ------------------------*/}
-        <View style={[styles.header, {backgroundColor: Colors.type[recipeColor].bg}]}>
+        <Card style={styles.header} color={Colors.peach}>
           <Pressable onPress={router.dismissAll}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
-          </Pressable> 
-          <ThemedText variant="headline">{recipe.title}</ThemedText>
-          <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors["regime"]} time={recipe.time} />
-        </View>
+          </Pressable>
+          <ThemedText variant="header">{recipe.title}</ThemedText>
+          <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors.regimes} time={recipe.time} />
+          <HeaderBorder/>
+        </Card>
         {/*------------------------ Ingredients ------------------------*/}
+        <Card>
         <Card style={styles.ingredients}>
-          <ThemedText variant="headline">Ingrédients</ThemedText>
-          {ingredients.map((ingredient, index) => (
+          <ThemedText variant="header">Ingrédients</ThemedText>
+          {recipe.ingredients.map((ingredient, index) => (
             <Row gap={4} key={index}>
               <View style={styles.ingrDot} />
-              {ingredient.quantity ? <ThemedText>{ingredient.quantity}</ThemedText> : null}
-              {ingredient.unity ? <ThemedText>{ingredient.unity}</ThemedText> : null}
-              <ThemedText>{ingredient.name}</ThemedText>
+              <ThemedText>{formatIngredient(ingredient)}</ThemedText>
             </Row>
           ))}
         </Card>
         {/*------------------------ Steps ------------------------*/}
         <Card style={styles.steps}>
-          <ThemedText variant="headline">Étapes</ThemedText>
-          {steps.map((step, index) => (
+          <ThemedText variant="header">Étapes</ThemedText>
+          {recipe.steps.map((step, index) => (
             <Row gap={4} key ={index}>
               <View style={styles.stepCircle}>
                   <Text style={styles.body}>{index + 1}</Text>
@@ -87,17 +87,20 @@ export default function Recipe() {
           ))}
         </Card>
         {/*------------------------ Actions ------------------------*/}
-        <Link href={{pathname: "/updateRecipe", params: {id: recipe.id}}} asChild>
-          <Pressable style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
-            <ThemedText variant="bodyStrong" color="background">Modifier la recette</ThemedText>
+        <Card>
+        <Link href={{pathname: "/recipe/updateRecipe", params: {id: recipe.id}}} asChild>
+          <Pressable style={styles.button}>
+            <ThemedText variant="bodyStrong" >Modifier la recette</ThemedText>
           </Pressable>
         </Link>
-        <Pressable onPress={() => deleteRecipeById(Number(params.id))} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
-          <ThemedText variant="bodyStrong" color="background">Supprimer la recette</ThemedText>
+        <Pressable onPress={() => handleDelete()} style={styles.button}>
+          <ThemedText variant="bodyStrong" >Supprimer la recette</ThemedText>
         </Pressable>
-        <Pressable onPress={() => addRecipeToList()} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
-          <ThemedText variant="bodyStrong" color="background">Ajouter à la liste de course</ThemedText>
+        <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={styles.button}>
+          <ThemedText variant="bodyStrong" >Ajouter à la liste de course</ThemedText>
         </Pressable>
+        </Card>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -113,14 +116,15 @@ const styles = StyleSheet.create({
     height: 32
   },
   header: {
-    gap: 16,
-    padding: 12,
+    gap: Spacing.md,
+    padding: Spacing.sm,
+    paddingBottom: Spacing.xl,
   },
   ingredients: {
     gap: 8,
     borderStyle: 'solid',
     borderBottomWidth: 1,
-    borderColor: Colors.light.text,
+    borderColor: Colors.orange,
   },
   steps: {
     gap: 8,
@@ -142,5 +146,16 @@ const styles = StyleSheet.create({
   body: {
     fontSize: 8,
     lineHeight: 16,
+  },
+    button: {
+    padding: 8,
+    backgroundColor: Colors.peach,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 4,
+    borderColor: Colors.orange,
+    borderWidth: 1,
+    borderBottomWidth: 3,
   },
 })
