@@ -52,7 +52,7 @@ export default function List() {
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.mint}]} edges={['top', 'left', 'right']}>
-      <ScrollView>
+      <ScrollView style={[ {backgroundColor: Colors.cream}]}>
         {/*------------------------ Header ------------------------*/}
         <Card style={styles.header} color={Colors.mint}>
           <Row gap={16}>

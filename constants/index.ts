@@ -29,7 +29,7 @@ export const Colors = {
 
     types: {
         Entrée:  { bg: '#1565C0', text: '#FCE4EC' },
-        Plat:    { bg: '#030303', text: '#FCE4EC' },
+        Plat:    { bg: '#e2df1d', text: '#FCE4EC' },
         Dessert: { bg: '#C2185B', text: '#FCE4EC' },
         Snack:   { bg: '#F57F17', text: '#FCE4EC' },
         Boisson: { bg: '#2E7D32', text: '#FCE4EC' },

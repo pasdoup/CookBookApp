@@ -1,16 +1,15 @@
 import { Card } from "@/components/Card";
 import Form from "@/components/Form";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
+import { Colors, Spacing } from "@/constants";
 import { RecipeInput } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { router, useLocalSearchParams } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UpdateRecipe() {
-  const colors = useThemeColors()
   const params = useLocalSearchParams()
   const { getRecipe, updateRecipe } = useRecipes();
 
@@ -22,7 +21,7 @@ export default function UpdateRecipe() {
         <Pressable onPress={router.dismissAll}>
           <Image source={require("@/assets/images/back.png")} style={styles.logo} />
         </Pressable> 
-        <View style={[styles.header, {backgroundColor: colors.header}]}>
+        <View style={[styles.header, {backgroundColor: Colors.peach}]}>
           <ThemedText variant="header">Go back</ThemedText>
         </View>
         <View>
@@ -41,14 +40,15 @@ export default function UpdateRecipe() {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={[ styles.container, {backgroundColor: Colors.peach}]}>
       <ScrollView>
-        <View style={[styles.header, {backgroundColor: colors.header}]}>
+        <Card style={[styles.header]} color={Colors.peach} >
           <Pressable onPress={router.back}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
           </Pressable> 
           <ThemedText variant="header">Modifier la recette</ThemedText>
-        </View>
+          <HeaderBorder/>
+        </Card>
         <Card>
           <Form onSubmit={update} recipe={recipe} submitLabel="Sauvegarder les modifications"/>
         </Card>
@@ -60,24 +60,15 @@ export default function UpdateRecipe() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 4, 
   },
   logo: {
     width: 32, 
     height: 32
   },
   header: {
-    gap: 16,
-    padding: 12,
-  },
-  ingredients: {
-    gap: 8,
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderColor: Colors.light.text,
-  },
-  steps: {
-    gap: 8,
+    padding: Spacing.sm,
+    paddingBottom: Spacing.xl,
+    height: 100,
   },
 })
 

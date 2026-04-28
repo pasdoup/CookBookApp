@@ -1,16 +1,15 @@
 import { Card } from "@/components/Card";
 import Form from "@/components/Form";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
+import { Colors, Spacing } from "@/constants";
 import { RecipeInput } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { router } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateRecipe() {
-  const colors = useThemeColors()
   const { addRecipe } = useRecipes();
 
   const handleSubmit = async (data: RecipeInput) => {
@@ -21,12 +20,13 @@ export default function CreateRecipe() {
   return (
     <SafeAreaView>
       <ScrollView>
-        <View style={[styles.header, {backgroundColor: colors.header}]}>
+        <Card style={[styles.header, ]} color={Colors.peach}>
           <Pressable onPress={router.back}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
           </Pressable> 
           <ThemedText variant="header">Nouvelle recette</ThemedText>
-        </View>
+          <HeaderBorder/>
+        </Card>
         <Card>
           <Form onSubmit={handleSubmit} submitLabel="Créer la recette"/>
         </Card>
@@ -45,16 +45,8 @@ const styles = StyleSheet.create({
     height: 32
   },
   header: {
-    gap: 16,
-    padding: 12,
-  },
-  ingredients: {
-    gap: 8,
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderColor: Colors.light.text,
-  },
-  steps: {
-    gap: 8,
+    padding: Spacing.sm,
+    paddingBottom: Spacing.xl,
+    height: 100,
   },
 })

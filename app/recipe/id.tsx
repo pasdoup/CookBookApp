@@ -1,31 +1,29 @@
 import { Card } from "@/components/Card";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { RecipeDesc } from "@/components/recipe/RecipeDesc";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
+import { Colors, Spacing } from "@/constants";
 import { formatIngredient } from "@/data/types";
 import { useRecipes } from "@/hooks/useRecipes";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Recipe() {
   const params = useLocalSearchParams()
-  const colors = useThemeColors()
   const { getRecipe, deleteRecipe, addRecipeToShoppingList } = useRecipes();
 
   const recipe = getRecipe(Number(params.id));
-  const recipeColor = recipe?.type as keyof typeof Colors.type
 
 
   if (!recipe) {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={[ {backgroundColor: Colors.peach}]}>
         <Pressable onPress={router.dismissAll}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
         </Pressable> 
-        <View style={[styles.header, {backgroundColor: colors.header}]}>
+        <View style={[styles.header, {backgroundColor: Colors.peach}]}>
           <ThemedText variant="header">Go back</ThemedText>
         </View>
         <View>
@@ -54,17 +52,19 @@ export default function Recipe() {
   };
 
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={[ {backgroundColor: Colors.peach}]}>
+      <ScrollView >
         {/*------------------------ Header ------------------------*/}
-        <View style={[styles.header, {backgroundColor: Colors.type[recipeColor].bg}]}>
+        <Card style={styles.header} color={Colors.peach}>
           <Pressable onPress={router.dismissAll}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
-          </Pressable> 
+          </Pressable>
           <ThemedText variant="header">{recipe.title}</ThemedText>
-          <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors["regime"]} time={recipe.time} />
-        </View>
+          <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors.regimes} time={recipe.time} />
+          <HeaderBorder/>
+        </Card>
         {/*------------------------ Ingredients ------------------------*/}
+        <Card>
         <Card style={styles.ingredients}>
           <ThemedText variant="header">Ingrédients</ThemedText>
           {recipe.ingredients.map((ingredient, index) => (
@@ -87,17 +87,20 @@ export default function Recipe() {
           ))}
         </Card>
         {/*------------------------ Actions ------------------------*/}
+        <Card>
         <Link href={{pathname: "/recipe/updateRecipe", params: {id: recipe.id}}} asChild>
-          <Pressable style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
+          <Pressable style={styles.button}>
             <ThemedText variant="bodyStrong" >Modifier la recette</ThemedText>
           </Pressable>
         </Link>
-        <Pressable onPress={() => handleDelete()} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
+        <Pressable onPress={() => handleDelete()} style={styles.button}>
           <ThemedText variant="bodyStrong" >Supprimer la recette</ThemedText>
         </Pressable>
-        <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={{padding: 12, borderRadius: 8, alignItems: 'center', marginBottom: 16}}>
+        <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={styles.button}>
           <ThemedText variant="bodyStrong" >Ajouter à la liste de course</ThemedText>
         </Pressable>
+        </Card>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -113,14 +116,15 @@ const styles = StyleSheet.create({
     height: 32
   },
   header: {
-    gap: 16,
-    padding: 12,
+    gap: Spacing.md,
+    padding: Spacing.sm,
+    paddingBottom: Spacing.xl,
   },
   ingredients: {
     gap: 8,
     borderStyle: 'solid',
     borderBottomWidth: 1,
-    borderColor: Colors.light.text,
+    borderColor: Colors.orange,
   },
   steps: {
     gap: 8,
@@ -142,5 +146,16 @@ const styles = StyleSheet.create({
   body: {
     fontSize: 8,
     lineHeight: 16,
+  },
+    button: {
+    padding: 8,
+    backgroundColor: Colors.peach,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 4,
+    borderColor: Colors.orange,
+    borderWidth: 1,
+    borderBottomWidth: 3,
   },
 })
