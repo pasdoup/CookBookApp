@@ -68,7 +68,9 @@ export default function Generator() {
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item}
         renderItem={({item}) => 
-          <Pressable onPress={() => {setType(item); resetFilter();}}><Chip name={item} active={type === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
+        <Pressable onPress={() => {setType(item); resetFilter();}}>
+          <Chip name={item} active={type === item} colorActive={Colors.lavander} colorBorder={Colors.purple} />
+        </Pressable>} 
         />
       <ThemedText>Régime de la recette</ThemedText>
       <FlatList 
@@ -77,7 +79,9 @@ export default function Generator() {
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-          <Pressable onPress={() => { setRegime(item); resetFilter(); }}><Chip name={item} active={regime === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
+        <Pressable onPress={() => { setRegime(item); resetFilter(); }}>
+          <Chip name={item} active={regime === item} colorActive={Colors.lavander} colorBorder={Colors.purple} />
+        </Pressable>} 
         />
       <ThemedText>Durée de la recette</ThemedText>
       <FlatList 
@@ -86,37 +90,38 @@ export default function Generator() {
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-          <Pressable onPress={() => { setTime(item); resetFilter(); }}><Chip name={`<= ${item}`} active={time === item} colorActive={Colors.lavander} colorBorder={Colors.purple} /></Pressable>} 
+        <Pressable onPress={() => { setTime(item); resetFilter(); }}>
+          <Chip name={`<= ${item}`} active={time === item} colorActive={Colors.lavander} colorBorder={Colors.purple} />
+        </Pressable>} 
       />
     </Card>
     {/*------------------------ Body ------------------------*/}
-    <Card style={[styles.body]}>
-      <Card>
-      <Pressable onPress={draw} android_ripple={{color: Colors.purple, foreground: true}} >
-        <View style={styles.buttonSave}>
-            <ThemedText variant="button" color={Colors.purple}>Trouver une recette</ThemedText>
-        </View>
-      </Pressable> 
-    </Card>
-
+    <Card style={[styles.body, {backgroundColor: Colors.bubblegum}]}>
       {noResult && (
-        <View style={styles.noRecipe}>
+        <Card style={styles.noRecipe}>
           <EmptyState message="Aucune recette trouvé"></EmptyState>
-        </View>
+        </Card>
       )}
-
       {result && (
-        <RecipeCard 
+        <Card style={styles.result} color={Colors.bubblegum}>
+          <RecipeCard 
             id={result.id}
             title={result.title}
             time={result.time}
             regime={result.regime}
             type={result.type}
-            style={{ height: 'auto', minHeight: 80, }} 
+            style={{  minHeight: 100, }} 
             color={Colors.lavanderLight} 
             colorBorder={Colors.purple} />
-          
+        </Card>
         )}
+      <Card>
+        <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={draw}>
+          <View style={styles.generate}>
+            <ThemedText variant="bodyStrong">Trouver ✦</ThemedText>
+          </View>
+        </Pressable>
+      </Card>
     </Card>
   </SafeAreaView>
   );
@@ -140,15 +145,17 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    gap: 12,
     padding: 12,
   },
   noRecipe: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  buttonSave: {
+  result: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  generate: {
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
     borderRadius: Radius.xl,
@@ -156,19 +163,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderBottomWidth: 5,
-    left: '25%',
     borderColor: Colors.purple,
     backgroundColor: Colors.lavander,
-    height: 75,
-    width: 200,
-  },
-  pressSave: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.xl,
-    height: 75,
-    width: 200,
-    borderColor: Colors.purple,
-    backgroundColor: Colors.lavander,
+    height: 70,
   },
 })

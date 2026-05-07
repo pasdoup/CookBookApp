@@ -18,8 +18,7 @@ export default function CreateRecipe() {
   };
 
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={[ styles.container, {backgroundColor: Colors.peach}]}>
         <Card style={[styles.header, ]} color={Colors.peach}>
           <Pressable onPress={router.back}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
@@ -27,6 +26,7 @@ export default function CreateRecipe() {
           <ThemedText variant="header">Nouvelle recette</ThemedText>
           <HeaderBorder/>
         </Card>
+      <ScrollView>
         <Card>
           <Form onSubmit={handleSubmit} submitLabel="Créer la recette"/>
         </Card>
@@ -38,7 +38,6 @@ export default function CreateRecipe() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 4, 
   },
   logo: {
     width: 32, 

@@ -41,7 +41,6 @@ export default function UpdateRecipe() {
 
   return (
     <SafeAreaView style={[ styles.container, {backgroundColor: Colors.peach}]}>
-      <ScrollView>
         <Card style={[styles.header]} color={Colors.peach} >
           <Pressable onPress={router.back}>
             <Image source={require("@/assets/images/back.png")} style={styles.logo} />
@@ -49,6 +48,7 @@ export default function UpdateRecipe() {
           <ThemedText variant="header">Modifier la recette</ThemedText>
           <HeaderBorder/>
         </Card>
+      <ScrollView>
         <Card>
           <Form onSubmit={update} recipe={recipe} submitLabel="Sauvegarder les modifications"/>
         </Card>

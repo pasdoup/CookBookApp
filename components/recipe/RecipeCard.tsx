@@ -1,4 +1,4 @@
-import { Colors } from "@/constants";
+import { Colors, Spacing } from "@/constants";
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, ViewStyle } from "react-native";
 import { Card } from "../Card";
@@ -23,7 +23,7 @@ export function RecipeCard ({style, id, title, time, regime, type, color, colorB
                 <Card style={[style, styles.container, {borderColor: colorBorder}]} color={color}>
                     <ThemedText variant="bodyStrong" >{title}</ThemedText>
                     <RecipeDesc 
-                        type={type as keyof typeof Colors.regimes} 
+                        type={type as keyof typeof Colors.types} 
                         regime={regime as keyof typeof Colors.regimes} 
                         time={time} 
                     />
@@ -35,11 +35,12 @@ export function RecipeCard ({style, id, title, time, regime, type, color, colorB
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 4, 
-        height: 80,
+        padding: Spacing.sm, 
+        height: 100,
         borderRadius: 8,
-        borderWidth: 1,
-        borderBottomWidth: 3,
+        borderWidth: 2,
+        borderBottomWidth: 4,
+        gap: 4,
     },
     title:{
         fontWeight: 'bold',

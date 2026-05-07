@@ -20,10 +20,11 @@ export function Chip ({style, name, color, colorActive, colorBorder, time, activ
         style={[style, 
                 styles.container, 
                 active ? 
-                    colorActive? {backgroundColor: colorActive, borderColor: colorBorder, borderWidth: 1} : {backgroundColor: Colors.vanilla} 
+                    colorActive? {backgroundColor: colorActive, borderColor: colorBorder, borderWidth: 1, borderBottomWidth: 2} : {backgroundColor: Colors.vanilla} 
                 : color? 
                     {backgroundColor: color} 
-                    : {backgroundColor: Colors.vanilla}]} 
+                    : {backgroundColor: Colors.cream},
+                {borderColor: colorBorder, borderWidth: 1}]} 
                 {...rest} >
         {time ? 
             <Image source={require("@/assets/images/time-left.png")} style={styles.time} /> 

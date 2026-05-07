@@ -17,7 +17,7 @@ export function formatIngredient(ing: Ingredient): string {
 }
 
 export const UNITS: string[] = [
-  'g', 'kg', 'ml', 'cl', 'l', 'cs', 'cc', 'oz', 'boite', '', 'tranches',
+  'g', 'ml', 'cs', 'cc', '',
 ];
 
 export type ShoppingItem = {
@@ -46,3 +46,11 @@ export type Recipe = {
 };
 
 export type RecipeInput = Omit<Recipe, 'id'>;
+
+export const logos = {
+  recipesBook: require("@/assets/images/iconBook.png"),
+  generator: require("@/assets/images/dice.png"),
+  shoppingList: require("@/assets/images/list.png"),
+} as const;
+
+export type LogoName = keyof typeof logos;

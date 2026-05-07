@@ -10,9 +10,9 @@ type Props = ViewProps & {
 export function ButtonNewRecipe({style, ...rest}: Props) {
     return (
         <Link href="/recipe/createRecipe" asChild>
-            <Pressable android_ripple={{color: Colors.rose, foreground: true}} style={{borderRadius: 8}}>
+            <Pressable android_ripple={{color: Colors.green, foreground: true}} style={{borderRadius: 8}}>
                 <View style={[styles.container, style]} {...rest}>
-                    <ThemedText variant="button" color={Colors.rose}>Créer une recette</ThemedText>
+                    <ThemedText variant="button" color={Colors.green}>+</ThemedText>
                 </View>
             </Pressable>   
         </Link>
@@ -23,11 +23,11 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: Spacing.xl,
         paddingVertical: Spacing.md,
-        height: 75,
-        width: 180,
-        borderRadius: Radius.xl,
-        backgroundColor: Colors.bubblegum, 
-        borderColor: Colors.rose,
+        height: 70,
+        width: 70,
+        borderRadius: Radius.full,
+        backgroundColor: Colors.mint, 
+        borderColor: Colors.green,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 20,
         left: '50%',
-        transform: [{translateX: -90}],
+        transform: [{translateX: -35}],
     },
 });

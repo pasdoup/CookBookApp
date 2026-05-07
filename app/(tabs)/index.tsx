@@ -2,17 +2,15 @@
 import { ButtonNewRecipe } from "@/components/ButtonNewRecipe";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
-import { HeaderBorder } from "@/components/HeaderBorder";
+import { Header } from "@/components/Header";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
-import { Row } from "@/components/Row";
 import { SearchBar } from "@/components/SearchBar";
-import { ThemedText } from "@/components/ThemedText";
 import { Colors, Spacing } from "@/constants";
 import type { Recipe, RecipeRegime, RecipeType } from '@/data/types';
 import { RECIPE_REGIMES, RECIPE_TYPES } from '@/data/types';
 import { useRecipes } from "@/hooks/useRecipes";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Image, Pressable, StyleSheet } from "react-native";
+import { FlatList, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ALL = 'Tous';
@@ -43,13 +41,7 @@ export default function Index() {
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.bubblegum}]} edges={['top', 'left', 'right']}>
       {/*------------------------ Header ------------------------*/}
-      <Card style={styles.header} color={Colors.bubblegum}>
-        <Row gap={16}>
-          <Image source={require("@/assets/images/iconBook.png")} style={styles.logo} />
-          <ThemedText variant="header">Mes recettes</ThemedText>
-        </Row>
-        <HeaderBorder/>
-      </Card>
+      <Header title={"Mon livre de recettes"} logo="recipesBook" subTitle={"Touver une bonne recette"} />
       {/*------------------------ Search & Filters ------------------------*/}
       <Card style={[styles.search]}>
         <SearchBar value={query} onChange={setQuery} />
@@ -60,7 +52,7 @@ export default function Index() {
           keyExtractor={(item)=> item} 
           renderItem={({item}) => 
             <Pressable onPress={() =>  setTypeFilter(item as RecipeType | typeof ALL)}>
-              <Chip name={item} active={typeFilter === item}  colorActive={Colors.bubblegum} colorBorder={Colors.rose}/>
+              <Chip name={item} active={typeFilter === item}  colorActive={Colors.lavander} colorBorder={Colors.purple}/>
             </Pressable>
           } 
         />
@@ -70,7 +62,7 @@ export default function Index() {
           contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
           renderItem={({item}) => 
             <Pressable onPress={() => setRegimeFilter(item as RecipeRegime | typeof ALL)}>
-              <Chip name={item} active={regimeFilter === item} colorActive={Colors.bubblegum} colorBorder={Colors.rose} />
+              <Chip name={item} active={regimeFilter === item} colorActive={Colors.lavander} colorBorder={Colors.purple} />
             </Pressable>} 
           keyExtractor={(item)=> item} 
         />
@@ -81,7 +73,14 @@ export default function Index() {
             data={results} 
             contentContainerStyle={[styles.list]}
             renderItem={({item}) => 
-                <RecipeCard id={item.id} title={item.title} time={item.time} type={item.type} regime={item.regime} color={Colors.bubblegumLight} colorBorder={Colors.rose} />
+                <RecipeCard 
+                  id={item.id} 
+                  title={item.title} 
+                  time={item.time} 
+                  type={item.type} 
+                  regime={item.regime} 
+                  color={Colors.bubblegumLight} 
+                  colorBorder={Colors.rose} />
             } 
             keyExtractor={(item)=> item.id.toString() }
           />

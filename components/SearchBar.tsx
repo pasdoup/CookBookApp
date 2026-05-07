@@ -16,7 +16,7 @@ export function SearchBar({value, onChange}: Props) {
             <TextInput
                 style={styles.input}
                 placeholder="Rechercher une recette"
-                placeholderTextColor={Colors.grey}
+                placeholderTextColor={Colors.text}
                 value={value}
                 onChangeText={onChange}
             />
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         height: 40,
         paddingHorizontal: Spacing.sm,
         margin: Spacing.sm,
-        backgroundColor: Colors.vanilla,
+        backgroundColor: Colors.cream,
     },
     logo: {
         width: 16,
