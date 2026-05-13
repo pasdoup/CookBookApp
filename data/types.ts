@@ -10,7 +10,7 @@ export function emptyIngredient(): Ingredient {
 
 export function formatIngredient(ing: Ingredient): string {
   const parts: string[] = [];
-  if (ing.quantity > 0)            parts.push(String(ing.quantity));
+  if (ing.quantity > 0) parts.push(String(ing.quantity));
   if (ing.unit && ing.unit.trim()) parts.push(ing.unit.trim());
   parts.push(ing.name);
   return parts.join(' ');
@@ -46,11 +46,3 @@ export type Recipe = {
 };
 
 export type RecipeInput = Omit<Recipe, 'id'>;
-
-export const logos = {
-  recipesBook: require("@/assets/images/iconBook.png"),
-  generator: require("@/assets/images/dice.png"),
-  shoppingList: require("@/assets/images/list.png"),
-} as const;
-
-export type LogoName = keyof typeof logos;

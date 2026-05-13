@@ -1,16 +1,17 @@
-
-import { ButtonNewRecipe } from "@/components/ButtonNewRecipe";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
-import { Header } from "@/components/Header";
+import { HeaderBorder } from "@/components/HeaderBorder";
 import { RecipeCard } from "@/components/recipe/RecipeCard";
+import { Row } from "@/components/Row";
 import { SearchBar } from "@/components/SearchBar";
-import { Colors, Spacing } from "@/constants";
+import { ThemedText } from "@/components/ThemedText";
+import { Colors, Radius, Spacing } from "@/constants";
 import type { Recipe, RecipeRegime, RecipeType } from '@/data/types';
 import { RECIPE_REGIMES, RECIPE_TYPES } from '@/data/types';
-import { useRecipes } from "@/hooks/useRecipes";
+import { useRecipes } from "@/data/useRecipes";
+import { Link } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet } from "react-native";
+import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ALL = 'Tous';
@@ -41,18 +42,26 @@ export default function Index() {
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.bubblegum}]} edges={['top', 'left', 'right']}>
       {/*------------------------ Header ------------------------*/}
-      <Header title={"Mon livre de recettes"} logo="recipesBook" subTitle={"Touver une bonne recette"} />
+      <Card style={styles.header} color={Colors.bubblegum}>
+          <Row gap={Spacing.md}>
+              {/* <Image source={logos[logo]} style={styles.logo} /> */}
+              <ThemedText variant="header">Mon livre de recettes</ThemedText>
+              <ThemedText variant="header" color={Colors.rose}>✦ ✦</ThemedText>
+          </Row>
+          <ThemedText variant="bodyStrong" color={Colors.rose}>Touver une bonne recette </ThemedText>
+          <HeaderBorder/>
+      </Card>
       {/*------------------------ Search & Filters ------------------------*/}
       <Card style={[styles.search]}>
         <SearchBar value={query} onChange={setQuery} />
         <FlatList 
           horizontal 
           data={[ALL, ...RECIPE_TYPES]} 
-          contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
+          contentContainerStyle={{gap: Spacing.xs, paddingHorizontal: Spacing.sm}} 
           keyExtractor={(item)=> item} 
           renderItem={({item}) => 
             <Pressable onPress={() =>  setTypeFilter(item as RecipeType | typeof ALL)}>
-              <Chip name={item} active={typeFilter === item}  colorActive={Colors.lavander} colorBorder={Colors.purple}/>
+              <Chip name={item} active={typeFilter === item}  colorActive={Colors.bubblegum} colorBorder={Colors.rose} color={Colors.bubblegumLight}/>
             </Pressable>
           } 
         />
@@ -62,7 +71,7 @@ export default function Index() {
           contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
           renderItem={({item}) => 
             <Pressable onPress={() => setRegimeFilter(item as RecipeRegime | typeof ALL)}>
-              <Chip name={item} active={regimeFilter === item} colorActive={Colors.lavander} colorBorder={Colors.purple} />
+              <Chip name={item} active={regimeFilter === item} colorActive={Colors.bubblegum} colorBorder={Colors.rose} color={Colors.bubblegumLight}/>
             </Pressable>} 
           keyExtractor={(item)=> item} 
         />
@@ -80,11 +89,19 @@ export default function Index() {
                   type={item.type} 
                   regime={item.regime} 
                   color={Colors.bubblegumLight} 
-                  colorBorder={Colors.rose} />
+                  colorBorder={Colors.bubblegum} />
             } 
             keyExtractor={(item)=> item.id.toString() }
           />
-        <ButtonNewRecipe/>
+      </Card>
+      <Card style={{padding: Spacing.xs}}>
+        <Link href="/recipe/createRecipe" asChild>
+            <Pressable android_ripple={{color: Colors.orange, foreground: true}} style={{borderRadius: Radius.sm}}>
+                <View style={styles.buttonNew}>
+                    <ThemedText variant="button" color={Colors.orange}>✦ Créer une recette</ThemedText>
+                </View>
+            </Pressable>   
+        </Link>
       </Card>
     </SafeAreaView>
   );
@@ -97,11 +114,12 @@ const styles = StyleSheet.create({
   header: {
     padding: Spacing.sm,
     paddingBottom: Spacing.xl,
-    height: 100,
+    paddingTop: Spacing.xxxl,
+    height: 175,
   },
   logo: {
-    width: 24, 
-    height: 24
+    width: 50, 
+    height: 50
   },
   search: {
     gap: Spacing.xs,
@@ -109,10 +127,22 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    position: 'relative',
   },
   list: {
     gap: 8,
     padding: 12,
+  },
+  buttonNew: {
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    height: 70,
+    borderRadius: Radius.lg,
+    backgroundColor: Colors.peach, 
+    borderColor: Colors.orange,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderBottomWidth: 5,
+   
   },
 })

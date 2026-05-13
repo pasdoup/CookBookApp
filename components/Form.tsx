@@ -1,5 +1,6 @@
-import { Colors, Radius, Spacing } from "@/constants";
+import { Colors, FontSize, Radius, Spacing } from "@/constants";
 import { emptyIngredient, Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeInput, RecipeRegime, RecipeType, UNITS } from "@/data/types";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
@@ -69,42 +70,50 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
   return (
     <Card style={styles.container}>
         {/*------------------------------------------------ Titre ------------------------------------------------------*/}
-        <ThemedText variant="bodyStrong">Titre</ThemedText>
-        <TextInput value={title} onChangeText={setTitle} placeholder="Titre de la recette" style={[styles.input, {backgroundColor: Colors.vanilla}]} />
+        <Card style={styles.info}>
+            <ThemedText variant="header2"  color={ Colors.orange}>Titre</ThemedText>
+            <TextInput value={title} onChangeText={setTitle} placeholder="Titre de la recette" style={[styles.input, {backgroundColor: Colors.vanilla}]} />
+        </Card>
 
         {/*----------------------------------------- Temps de préparation ----------------------------------------------*/}
-        <ThemedText variant="bodyStrong">Temps de préparation en minutes</ThemedText>
-        <TextInput value={time.toString()} onChangeText={setTime} placeholder="30" style={[styles.input, {backgroundColor: Colors.vanilla}]} keyboardType="numeric"/>    
+        <Card style={styles.info}>
+            <ThemedText variant="header2" color={Colors.orange}>Temps de préparation en minutes</ThemedText>
+            <TextInput value={time.toString()} onChangeText={setTime} placeholder="30" style={[styles.input, {backgroundColor: Colors.vanilla}]} keyboardType="numeric"/>    
+        </Card>
 
         {/*-------------------------------------------- Type et régime -------------------------------------------------*/}
-        <ThemedText variant="bodyStrong">Type de la recette</ThemedText>
-        <FlatList 
-            horizontal 
-            data={RECIPE_TYPES} 
-            contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
-            renderItem={({item}) => 
+        <Card style={styles.info}>
+            <ThemedText variant="header2" color={Colors.orange}>Type de la recette</ThemedText>
+            <FlatList 
+                horizontal 
+                data={RECIPE_TYPES} 
+                contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
+                renderItem={({item}) => 
                 <Pressable onPress={() => setType(item)}>
-                    <Chip name={item} active={type === item} colorActive={Colors.peach} colorBorder={Colors.orange} />
+                    <Chip name={item} active={type === item} colorActive={Colors.peach} colorBorder={Colors.orange} color={Colors.peachLight}/>
                 </Pressable>} 
             keyExtractor={(item)=> item} 
         />
-        <ThemedText variant="bodyStrong">Régime alimentaire</ThemedText>
-        <FlatList 
-            horizontal 
-            data={RECIPE_REGIMES} 
+        </Card>
+        <Card style={styles.info}>
+            <ThemedText variant="header2" color={Colors.orange}>Régime alimentaire</ThemedText>
+            <FlatList 
+                horizontal 
+                data={RECIPE_REGIMES} 
             contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
             renderItem={({item}) => 
                 <Pressable onPress={() => setRegime(item)}>
-                    <Chip name={item} active={regime === item} colorActive={Colors.peach} colorBorder={Colors.orange} />
+                    <Chip name={item} active={regime === item} colorActive={Colors.peach} colorBorder={Colors.orange} color={Colors.peachLight}/>
                 </Pressable>} 
             keyExtractor={(item)=> item} 
         />
+        </Card>
         {/*----------------------------------------------- Ingrédients -------------------------------------------------*/}
         <Card style={styles.ingredients}>
-            <ThemedText variant="header2">✿ Liste des ingrédients</ThemedText>
+            <ThemedText variant="header2" color={Colors.orange}>✿ Liste des ingrédients</ThemedText>
                 {ingredients.map((ingredient, index) => (
                     <Row key={index} gap={Spacing.sm}>
-                        <ThemedText variant="body" color={Colors.lavander}>✦</ThemedText>
+                        <ThemedText variant="header2" color={Colors.orange}>✦</ThemedText>
                         <TextInput 
                             value={ingredient.quantity === 0 ? '' : String(ingredient.quantity)} 
                             onChangeText={(text) => updateIngredient(index, 'quantity', text === '' ? 0 : parseFloat(text) || 0)}
@@ -116,7 +125,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                                 selectedValue={ingredient.unit}
                                 onValueChange={(text) => updateIngredient(index, 'unit', text)}
                                 style={[styles.inputUnit]}
-                                dropdownIconColor={Colors.green}
+                                dropdownIconColor={Colors.orange}
                                 >
                                 {UNITS.map((u) => (
                                     <Picker.Item key={u} label={u} value={u} />
@@ -130,20 +139,18 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                             style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]} />
                         {ingredients.length > 0 && (
                             <Pressable onPress={() => removeIngredient(index)}>
-                                <View style={styles.buttonRemove}>
-                                    <ThemedText variant="bodyStrong">x</ThemedText>
-                                </View>
+                                <Ionicons name="trash-outline" color={Colors.peach} size={25}/>
                             </Pressable>
                         )}
                     </Row>
                 ))}
             <Pressable onPress={addIngredient}>
-                <ThemedText variant="bodyStrong">+ Ajouter un ingrédient</ThemedText>
+                <ThemedText variant="bodyStrong" color={ Colors.peach}>+ Ajouter un ingrédient</ThemedText>
             </Pressable>
         </Card>
         {/*----------------------------------------- Etapes de préparation ----------------------------------------------*/}
         <Card style={styles.steps}>
-            <ThemedText variant="header2">✿ Etapes de préparation</ThemedText>
+            <ThemedText variant="header2" color={Colors.orange}>✿ Etapes de préparation</ThemedText>
                 {steps.map((step, index) => (
                     <Row key={index} gap={Spacing.sm}>
                         <View style={styles.stepCircle}>
@@ -157,21 +164,21 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                         />
                         {steps.length > 0 && (
                             <Pressable onPress={() => removeStep(index)}>
-                                <View style={styles.buttonRemove}>
-                                    <ThemedText variant="bodyStrong">x</ThemedText>
-                                </View>
+                                <Ionicons name="trash-outline" color={Colors.peach} size={25}/>
                             </Pressable>
                         )}
                     </Row>
                 ))}
             <Pressable onPress={addStep}>
-                <ThemedText variant="bodyStrong">+ Ajouter une étape</ThemedText>
+                <ThemedText variant="bodyStrong" color={ Colors.peach}>+ Ajouter une étape</ThemedText>
             </Pressable> 
         </Card>
 
-        <Pressable onPress={handleSubmit}>
+        <Pressable onPress={handleSubmit} android_ripple={{color: Colors.orange, foreground: true}}>
             <View style={styles.buttonSave}>
-                <ThemedText variant="bodyStrong">{submitLabel}</ThemedText>
+                <ThemedText variant="bodyStrong" color={Colors.orange}>
+                    {submitLabel}
+                </ThemedText>
             </View>
         </Pressable> 
     </Card>
@@ -190,10 +197,12 @@ const styles = StyleSheet.create({
         height: 50,
         backgroundColor: Colors.vanilla,
         flex: 1,
+        fontSize: FontSize.body,
+        paddingLeft: Spacing.xs,
     },
     picker: {
         borderWidth: 1,
-        borderColor: Colors.mint,
+        borderColor: Colors.orange,
         borderRadius: 8, 
         overflow: 'hidden',
         width: 80,
@@ -212,26 +221,22 @@ const styles = StyleSheet.create({
         margin: 4,
     },
     buttonSave: {
-        marginTop: 16,
-        padding: 12,
+        padding: Spacing.sm,
         backgroundColor: Colors.peach,
-        borderRadius: 8,
+        borderRadius: Radius.lg,
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 2,
+        borderBottomWidth: 5,
+        borderColor: Colors.orange,
     },
     stepCircle: {
         width: Spacing.xl, 
             height: Spacing.xl, 
             borderRadius: Radius.full,
-            backgroundColor: Colors.lavander,
+            backgroundColor: Colors.peach,
             alignItems: 'center', 
             justifyContent: 'center'
-    },
-    ingrDot: {
-        width: 6, 
-        height: 6, 
-        borderRadius: 999,
-        backgroundColor: '#ffd33d',
     },
     ingredients: {
         gap: Spacing.md,
@@ -246,5 +251,10 @@ const styles = StyleSheet.create({
     steps: {
         gap: Spacing.md,
         flex: 1,
+        paddingBottom: Spacing.md,
+    },
+    info: {
+        gap: Spacing.sm,
+        paddingBottom: Spacing.md,
     },
 })

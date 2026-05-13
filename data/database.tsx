@@ -2,7 +2,7 @@ import * as SQLite from "expo-sqlite";
 import { Ingredient, Recipe, RecipeInput, ShoppingItem } from "./types";
 
 
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 let _db: SQLite.SQLiteDatabase | null = null;
 let _dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
@@ -66,7 +66,7 @@ export async function initializeDb(db: SQLite.SQLiteDatabase) {
   }
 }
 
-//------------------------------Recipe
+//------------------------------ Recipe --------------------------------------------------
 type RecipeRow = {
   id: number; title: string; time: number;
   type: string; regime: string;
@@ -146,7 +146,7 @@ export async function dbSearch(q: string, regime?: string, type?: string): Promi
   return rows.map(_rowToRecipe);
 }
 
-//-------------------------------Shopping
+//------------------------------- Shopping ----------------------------------------------
 
 export async function addItem(name: string, quantity: number, unit: string) {
   const db = await getDb();
@@ -200,7 +200,7 @@ export async function updateItem(id: number, name: string, quantity: number, uni
     [name, quantity, unit, id]
   );
 }
-// -------------------------------------- Default
+// -------------------------------------- Default ----------------------------------------
 async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {
 
   const ins = (title: string, time: number, type: string, regime: string,
@@ -210,50 +210,21 @@ async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {
       [title, time, type, regime, JSON.stringify(ingredients), JSON.stringify(steps)]
     );
 
-  await ins('Ratatouille provençale', 60, 'Plat', 'Végé',
-    [{ name: 'courgettes', quantity: 2, unit: '' }, { name: 'aubergines', quantity: 2, unit: '' },
-     { name: 'tomates', quantity: 3, unit: '' }, { name: 'oignons', quantity: 2, unit: '' },
-     { name: "herbes de Provence", quantity: 2, unit: 'cs' }, { name: "huile d'olive", quantity: 3, unit: 'cs' }],
-    ["Couper les légumes en rondelles.", "Faire revenir les oignons.", "Ajouter les légumes et cuire 45 min à feu doux."]
+  await ins('Gâteau au chocolat', 30, 'Dessert', 'Standard',
+    [{ name: 'chocolat', quantity: 200, unit: 'g' }, { name: 'beurre demi-sel', quantity: 200, unit: 'g' },
+     { name: 'oeufs', quantity: 4, unit: '' }, { name: 'sucre', quantity: 200, unit: 'g' },
+     { name: "farine", quantity: 1, unit: 'cs' }],
+    ["Préchauffer le four à 180°C.","Dans une casserole à feu doux, faire fondre le beurre avec le chocolat.", 
+      "Dans un saladier battre les oeufs avec le sucre et ajouter la farine", "Incorporer le chocolat fondu dans le saladier.", 
+      "Verser la préparation dans un moule bien beurré", "Mettre au four 20min."]
   );
-  await ins('Spaghetti Carbonara', 25, 'Plat', 'Standard',
-    [{ name: 'spaghetti', quantity: 400, unit: 'g' }, { name: 'lardons fumés', quantity: 150, unit: 'g' },
-     { name: 'œufs', quantity: 3, unit: '' }, { name: 'parmesan râpé', quantity: 100, unit: 'g' },
-     { name: 'poivre noir', quantity: 0, unit: '' }],
-    ["Cuire les pâtes al dente.", "Rissoler les lardons.", "Mélanger œufs + parmesan hors du feu avec les pâtes."]
-  );
-  await ins('Buddha Bowl vegan', 20, 'Plat', 'Vegan',
-    [{ name: 'quinoa cuit', quantity: 150, unit: 'g' }, { name: 'pois chiches', quantity: 1, unit: 'boite' },
-     { name: 'avocat', quantity: 1, unit: '' }, { name: 'épinards frais', quantity: 100, unit: 'g' },
-     { name: 'sauce tahini', quantity: 3, unit: 'cs' }, { name: 'citron', quantity: 1, unit: '' }],
-    ["Rôtir les pois chiches 20 min à 200°C.", "Disposer le quinoa dans un bol.", "Ajouter les garnitures et arroser de tahini."]
-  );
-  await ins('Soupe de lentilles', 35, 'Boisson', 'Vegan',
-    [{ name: 'lentilles corail', quantity: 250, unit: 'g' }, { name: 'oignon', quantity: 1, unit: '' },
-     { name: 'carottes', quantity: 2, unit: '' }, { name: 'cumin', quantity: 1, unit: 'cc' },
-     { name: 'curcuma', quantity: 1, unit: 'cc' }, { name: 'bouillon légumes', quantity: 1, unit: 'l' }],
-    ["Revenir oignon et carottes.", "Ajouter épices et lentilles.", "Cuire 25 min, mixer partiellement."]
-  );
-  await ins('Tiramisu classique', 30, 'Dessert', 'Standard',
-    [{ name: 'mascarpone', quantity: 500, unit: 'g' }, { name: 'œufs', quantity: 4, unit: '' },
-     { name: 'sucre', quantity: 80, unit: 'g' }, { name: 'biscuits cuillère', quantity: 200, unit: 'g' },
-     { name: 'café fort', quantity: 200, unit: 'ml' }, { name: 'cacao amer', quantity: 2, unit: 'cs' }],
-    ["Fouetter jaunes + sucre. Incorporer mascarpone.", "Monter blancs en neige et incorporer.", "Alterner couches biscuits/crème. Réfrigérer 4h."]
-  );
-  await ins('Poulet curry coco', 40, 'Plat', 'Végé',
-    [{ name: 'blanc de poulet', quantity: 600, unit: 'g' }, { name: 'lait de coco', quantity: 400, unit: 'ml' },
-     { name: 'curry', quantity: 2, unit: 'cs' }, { name: 'oignon', quantity: 1, unit: '' }],
-    ["Revenir oignon. Ajouter curry.", "Dorer le poulet.", "Verser le lait de coco et mijoter 20 min."]
-  );
-  await ins('Omelette champignons', 15, 'Plat', 'Végé',
-    [{ name: 'œufs', quantity: 4, unit: '' }, { name: 'champignons', quantity: 200, unit: 'g' },
-     { name: 'échalote', quantity: 1, unit: '' }, { name: 'beurre', quantity: 20, unit: 'g' }],
-    ["Sauter champignons + échalote.", "Battre les œufs.", "Cuire l'omelette et garnir."]
-  );
-  await ins('Bruschetta tomates', 10, 'Entrée', 'Vegan',
-    [{ name: 'pain de campagne', quantity: 4, unit: 'tranches' }, { name: 'tomates', quantity: 3, unit: '' },
-     { name: "gousses d'ail", quantity: 2, unit: '' }, { name: 'basilic frais', quantity: 0, unit: '' },
-     { name: "huile d'olive", quantity: 2, unit: 'cs' }],
-    ["Griller le pain.", "Frotter avec l'ail.", "Garnir de tomates concassées et basilic."]
+
+  await ins('Poulet curry', 20, 'Plat', 'Standard',
+    [{ name: 'blanc de poulet', quantity: 200, unit: 'g' }, { name: 'lait de coco', quantity: 10, unit: 'cl' },
+     { name: 'crème fraiche', quantity: 25, unit: 'cl' }, { name: 'curry', quantity: 1, unit: '' }],
+    ["Découper le blanc de poulet en petits morceaux.",
+      "Faire dorer le poulet dans une casserole.", 
+      "Ajouter la crème et le coco à la casserole.", 
+      "Ajouter au tant de curry souhaité.", "Laisser réduire dans la casserole."]
   );
 }

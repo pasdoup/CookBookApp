@@ -5,10 +5,10 @@ import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors, Radius, Spacing } from "@/constants";
 import { formatIngredient } from "@/data/types";
-import { useRecipes } from "@/hooks/useRecipes";
+import { useRecipes } from "@/data/useRecipes";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, router, useLocalSearchParams } from "expo-router";
-import { Alert, Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -23,7 +23,7 @@ export default function Recipe() {
     return (
       <SafeAreaView style={[ {backgroundColor: Colors.peach}]}>
         <Pressable onPress={router.dismissAll}>
-            <Image source={require("@/assets/images/back.png")} style={styles.logo} />
+            <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
         </Pressable> 
         <View style={[styles.header, {backgroundColor: Colors.peach}]}>
           <ThemedText variant="header">Go back</ThemedText>
@@ -58,11 +58,15 @@ export default function Recipe() {
         {/*------------------------ Header -------------------a refaire -----*/}
         <Card style={styles.header} color={Colors.peach}>
           <Pressable onPress={router.dismissAll}>
-            <Image source={require("@/assets/images/back.png")} style={styles.logo} />
-          </Pressable>
-          <ThemedText variant="header">{recipe.title}</ThemedText>
-          <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors.regimes} time={recipe.time} />
-          <HeaderBorder/>
+            <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
+          </Pressable> 
+            <Row gap={Spacing.md}>
+              <ThemedText variant="header" color={ Colors.orange }>{recipe.title}</ThemedText>
+              <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
+            </Row>
+            <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors.regimes} time={recipe.time} />
+            <HeaderBorder/>
+            <HeaderBorder/>
         </Card>
 
       <ScrollView style={{ flex: 1 }}
@@ -71,10 +75,9 @@ export default function Recipe() {
         {/*------------------------ Ingredients ------------------------*/}
           <Card style={styles.ingredients}>
             <ThemedText variant="header2">✿ Ingrédients</ThemedText>
-            <ThemedText variant="header2">- · ◆ ◇ ▸ ▹ ❖ ✦ ♡ ˖ ⁺</ThemedText>
             {recipe.ingredients.map((ingredient, index) => (
               <Row gap={Spacing.xs} key={index}>
-                <ThemedText variant="body" color={Colors.lavander}>✦ </ThemedText>
+                <ThemedText variant="list" color={Colors.peach}>✦ </ThemedText>
                 <ThemedText variant="body">{formatIngredient(ingredient)}</ThemedText>
               </Row>
             ))}
@@ -96,18 +99,17 @@ export default function Recipe() {
           {/*------------------------ Actions ------------------------*/}
       <Card style={styles.actions}>
           <Link href={{pathname: "/recipe/updateRecipe", params: {id: recipe.id}}} asChild>
-            <Pressable style={styles.button}>
-              <ThemedText variant="bodyStrong" >✎</ThemedText>
+            <Pressable style={styles.button} android_ripple={{color: Colors.orange, foreground: true}}>
+              <Ionicons name="pencil-outline" size={32} color={ Colors.orange } />
             </Pressable>
           </Link>
-          <Pressable onPress={() => handleDelete()} style={styles.button}>
-            <Ionicons name="trash-outline"/>
+          <Pressable onPress={() => handleDelete()} style={styles.buttonDelete} android_ripple={{color: Colors.orange, foreground: true}}>
+            <Ionicons name="trash-outline" size={32} color={ Colors.orange } />
           </Pressable>
-          <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={styles.button}>
-            <Ionicons name="cart-outline"/>
-            <ThemedText variant="bodyStrong" >Ajouter à la liste de course 🛒</ThemedText>
+          <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={styles.button} android_ripple={{color: Colors.orange, foreground: true}}>
+            <Ionicons name="cart-outline" size={32} color={ Colors.orange }/>
           </Pressable>
-          </Card>
+        </Card>
     </SafeAreaView>
   );
 }
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
     height: 32
   },
   header: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
     padding: Spacing.sm,
     paddingBottom: Spacing.xl,
   },
@@ -140,27 +142,43 @@ const styles = StyleSheet.create({
     width: Spacing.xl, 
     height: Spacing.xl, 
     borderRadius: Radius.full,
-    backgroundColor: Colors.lavander,
+    backgroundColor: Colors.peach,
     alignItems: 'center', 
     justifyContent: 'center',
   },
   button: {
-    padding: 8,
+    padding: Spacing.xs,
     backgroundColor: Colors.peach,
-    borderRadius: 8,
+    borderRadius: Radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 4,
+    margin: Spacing.xxs,
     borderColor: Colors.orange,
     borderWidth: 1,
     borderBottomWidth: 3,
+    flex: 1,
+  },
+  buttonDelete: {
+    padding: Spacing.xs,
+    backgroundColor: Colors.vanilla,
+    borderRadius: Radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: Spacing.xxs,
+    borderColor: Colors.orange,
+    borderWidth: 1,
+    borderBottomWidth: 3,
+    flex: 1,
   },
   main: {
-    padding: Spacing.sm,
+    padding: Spacing.lg,
     gap: Spacing.sm,
     flex: 1,
   },
   actions: {
     bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: Spacing.sm,
   },
 })

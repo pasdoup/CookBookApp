@@ -7,9 +7,9 @@ import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors, Radius, Spacing } from "@/constants";
 import { Recipe, RECIPE_REGIMES, RECIPE_TYPES, TIMES } from "@/data/types";
-import { useRecipes } from "@/hooks/useRecipes";
+import { useRecipes } from "@/data/useRecipes";
 import { useCallback, useState } from "react";
-import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -24,11 +24,11 @@ export default function Generator() {
   const [history,     setHistory]     = useState<number[]>([]);
   
   const getFiltered = useCallback((): Recipe[] => {
-    let list = recipes;
-    if (regime !== 'Tous') list = list.filter(r => r.regime === regime);
-    if (type   !== 'Tous') list = list.filter(r => r.type   === type);
-    if (time   !== 'Toutes') list = list.filter(r => r.time   <= Number(time));
-    return list;
+    let filterRecipes = recipes;
+    if (regime !== 'Tous') filterRecipes = filterRecipes.filter(r => r.regime === regime);
+    if (type   !== 'Tous') filterRecipes = filterRecipes.filter(r => r.type   === type);
+    if (time   !== 'Toutes') filterRecipes = filterRecipes.filter(r => r.time   <= Number(time));
+    return filterRecipes;
   }, [recipes, regime, type, time]);
 
   const draw = useCallback(() => {
@@ -45,19 +45,17 @@ export default function Generator() {
 
   }, [getFiltered, history]);
 
-  const resetFilter = () => { setResult(null); setNoResult(false); };
-
-
-  
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.lavander}]} edges={['top', 'left', 'right']}>
     {/*------------------------ Header ------------------------*/}
     <Card style={styles.header} color={Colors.lavander}>
-      <Row gap={16}>
-        <Image source={require("@/assets/images/dice.png")} style={styles.logo} />
-        <ThemedText variant="header">Besoin d'une idée ?</ThemedText>
-      </Row>
-      <HeaderBorder/>
+        <Row gap={Spacing.md}>
+            {/* <Image source={logos[logo]} style={styles.logo} /> */}
+            <ThemedText variant="header">Trouver une recette ?</ThemedText>
+            <ThemedText variant="header" color={Colors.purple}>✦ ✦</ThemedText>
+        </Row>
+        <ThemedText variant="header2" color={Colors.purple}>Besoin d'une idée pour ce soir? </ThemedText>
+        <HeaderBorder/>
     </Card>
     {/*------------------------ Filters ------------------------*/}
     <Card style={[styles.search]}>
@@ -68,8 +66,8 @@ export default function Generator() {
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item}
         renderItem={({item}) => 
-        <Pressable onPress={() => {setType(item); resetFilter();}}>
-          <Chip name={item} active={type === item} colorActive={Colors.lavander} colorBorder={Colors.purple} />
+        <Pressable onPress={() => {setType(item)}}>
+          <Chip name={item} active={type === item} colorActive={Colors.lavander} colorBorder={Colors.purple} color={Colors.lavanderLight}/>
         </Pressable>} 
         />
       <ThemedText>Régime de la recette</ThemedText>
@@ -79,8 +77,8 @@ export default function Generator() {
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-        <Pressable onPress={() => { setRegime(item); resetFilter(); }}>
-          <Chip name={item} active={regime === item} colorActive={Colors.lavander} colorBorder={Colors.purple} />
+        <Pressable onPress={() => { setRegime(item)}}>
+          <Chip name={item} active={regime === item} colorActive={Colors.lavander} colorBorder={Colors.purple} color={Colors.lavanderLight}/>
         </Pressable>} 
         />
       <ThemedText>Durée de la recette</ThemedText>
@@ -90,37 +88,36 @@ export default function Generator() {
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-        <Pressable onPress={() => { setTime(item); resetFilter(); }}>
-          <Chip name={`<= ${item}`} active={time === item} colorActive={Colors.lavander} colorBorder={Colors.purple} />
+        <Pressable onPress={() => { setTime(item)}}>
+          <Chip name={`<= ${item}`} active={time === item} colorActive={Colors.lavander} colorBorder={Colors.purple} color={Colors.lavanderLight}/>
         </Pressable>} 
       />
     </Card>
     {/*------------------------ Body ------------------------*/}
-    <Card style={[styles.body, {backgroundColor: Colors.bubblegum}]}>
+    <Card style={[styles.body]}>
       {noResult && (
         <Card style={styles.noRecipe}>
           <EmptyState message="Aucune recette trouvé"></EmptyState>
         </Card>
       )}
       {result && (
-        <Card style={styles.result} color={Colors.bubblegum}>
+        <Card style={styles.result}>
           <RecipeCard 
-            id={result.id}
-            title={result.title}
-            time={result.time}
-            regime={result.regime}
-            type={result.type}
-            style={{  minHeight: 100, }} 
-            color={Colors.lavanderLight} 
-            colorBorder={Colors.purple} />
+                  id={result.id} 
+                  title={result.title} 
+                  time={result.time} 
+                  type={result.type} 
+                  regime={result.regime} 
+                  color={Colors.lavanderLight} 
+                  colorBorder={Colors.purple} />
         </Card>
         )}
-      <Card>
-        <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={draw}>
+        <Pressable android_ripple={{color: Colors.purple, foreground: true}} onPress={draw}>
           <View style={styles.generate}>
-            <ThemedText variant="bodyStrong">Trouver ✦</ThemedText>
+            <ThemedText variant="bodyStrong" color={Colors.purple}>Trouver ✦✦</ThemedText>
           </View>
         </Pressable>
+      <Card>
       </Card>
     </Card>
   </SafeAreaView>
@@ -138,22 +135,24 @@ const styles = StyleSheet.create({
   header: {
     padding: Spacing.sm,
     paddingBottom: Spacing.xl,
-    height: 100,
+    paddingTop: Spacing.xxxl,
+    height: 175,
   },
   search: {
-    gap: 8,
+    gap: Spacing.xs,
+    padding: Spacing.xs
   },
   body: {
     flex: 1,
-    padding: 12,
+    padding: Spacing.sm,
   },
   noRecipe: {
     flex: 1,
     justifyContent: 'center',
   },
   result: {
+    paddingTop: Spacing.md,
     flex: 1,
-    justifyContent: 'center',
   },
   generate: {
     paddingHorizontal: Spacing.xl,
@@ -164,7 +163,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderBottomWidth: 5,
     borderColor: Colors.purple,
-    backgroundColor: Colors.lavander,
+    backgroundColor: Colors.lavanderLight,
     height: 70,
   },
 })

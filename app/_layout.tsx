@@ -1,4 +1,4 @@
-import { RecipesProvider } from "@/hooks/useRecipes";
+import { RecipesProvider } from "@/data/useRecipes";
 import { Stack } from "expo-router";
 
 export const unstable_settings = {

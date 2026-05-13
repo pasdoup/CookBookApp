@@ -11,7 +11,7 @@ export function ButtonNewRecipe({style, ...rest}: Props) {
     return (
         <Link href="/recipe/createRecipe" asChild>
             <Pressable android_ripple={{color: Colors.green, foreground: true}} style={{borderRadius: 8}}>
-                <View style={[styles.container, style]} {...rest}>
+                <View style={[ style]} {...rest}>
                     <ThemedText variant="button" color={Colors.green}>+</ThemedText>
                 </View>
             </Pressable>   
@@ -20,7 +20,7 @@ export function ButtonNewRecipe({style, ...rest}: Props) {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    buttonNew: {
         paddingHorizontal: Spacing.xl,
         paddingVertical: Spacing.md,
         height: 70,

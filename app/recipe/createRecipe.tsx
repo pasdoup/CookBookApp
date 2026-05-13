@@ -1,12 +1,14 @@
 import { Card } from "@/components/Card";
 import Form from "@/components/Form";
 import { HeaderBorder } from "@/components/HeaderBorder";
+import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors, Spacing } from "@/constants";
 import { RecipeInput } from "@/data/types";
-import { useRecipes } from "@/hooks/useRecipes";
+import { useRecipes } from "@/data/useRecipes";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet } from "react-native";
+import { Pressable, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateRecipe() {
@@ -19,12 +21,15 @@ export default function CreateRecipe() {
 
   return (
     <SafeAreaView style={[ styles.container, {backgroundColor: Colors.peach}]}>
-        <Card style={[styles.header, ]} color={Colors.peach}>
+        <Card style={styles.header} color={Colors.peach}>
           <Pressable onPress={router.back}>
-            <Image source={require("@/assets/images/back.png")} style={styles.logo} />
+            <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
           </Pressable> 
-          <ThemedText variant="header">Nouvelle recette</ThemedText>
-          <HeaderBorder/>
+            <Row gap={Spacing.md}>
+                <ThemedText variant="header" color={ Colors.orange }>Nouvelle recette</ThemedText>
+                <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
+            </Row>
+            <HeaderBorder/>
         </Card>
       <ScrollView>
         <Card>
@@ -39,13 +44,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  logo: {
-    width: 32, 
-    height: 32
-  },
   header: {
     padding: Spacing.sm,
     paddingBottom: Spacing.xl,
-    height: 100,
+    paddingTop: Spacing.xxxl,
+    height: 175,
   },
 })

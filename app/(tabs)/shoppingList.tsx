@@ -3,13 +3,13 @@ import { EmptyState } from "@/components/EmptyState";
 import { HeaderBorder } from "@/components/HeaderBorder";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors, Radius, Spacing } from "@/constants";
+import { Colors, FontSize, Radius, Spacing } from "@/constants";
 import { UNITS } from "@/data/types";
-import { useRecipes } from "@/hooks/useRecipes";
+import { useRecipes } from "@/data/useRecipes";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -50,11 +50,13 @@ export default function List() {
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.mint}]} edges={['top', 'left', 'right']}>
       {/*------------------------ Header ------------------------*/}
       <Card style={styles.header} color={Colors.mint}>
-        <Row gap={16}>
-          <Image source={require("@/assets/images/list.png")} style={styles.logo} />
-          <ThemedText variant="header">Liste de course</ThemedText>
-        </Row>
-        <HeaderBorder/>
+          <Row gap={Spacing.md}>
+              {/* <Image source={logos[logo]} style={styles.logo} /> */}
+              <ThemedText variant="header">Liste de course</ThemedText>
+              <ThemedText variant="header" color={Colors.green}>✦ ✦</ThemedText>
+          </Row>
+          <ThemedText variant="bodyStrong" color={Colors.green}>Qu'est qui faut acheter </ThemedText>
+          <HeaderBorder/>
       </Card>
         {/*------------------------ Add item ------------------------*/}
         <Card>
@@ -79,6 +81,7 @@ export default function List() {
                   onValueChange={setUnit}
                   style={[styles.inputUnit]}
                   dropdownIconColor={Colors.green}
+                  itemStyle={{fontSize: FontSize.body}}
                   >
                   {UNITS.map((u) => (
                     <Picker.Item key={u} label={u} value={u} />
@@ -88,7 +91,7 @@ export default function List() {
             </Row>
             <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={handleAdd}>
               <View style={styles.buttonAdd}>
-                <ThemedText variant="bodyStrong">Ajouter</ThemedText>
+                <ThemedText variant="button">Ajouter</ThemedText>
               </View>
           </Pressable>
           </Card>
@@ -102,7 +105,7 @@ export default function List() {
           {shoppingList.map((item) => (
           <Card key={item.id} >
             {editId === item.id ? (
-              <Row style={{ flex: 1 }}>
+              <Row gap={Spacing.xxs} style={{ flex: 1 }}>
                 <TextInput
                   value={editName}
                   onChangeText={setEditName}
@@ -121,6 +124,7 @@ export default function List() {
                     onValueChange={setUnit}
                     style={[styles.inputUnit]}
                     dropdownIconColor={Colors.green}
+                    itemStyle={{fontSize: FontSize.body}}
                     >
                     {UNITS.map((u) => (
                       <Picker.Item key={u} label={u} value={u} />
@@ -128,8 +132,8 @@ export default function List() {
                   </Picker>
                 </View>
 
-                <Pressable style={styles.button} onPress={saveEdit}>
-                  <ThemedText >Enregistrer</ThemedText>
+                <Pressable onPress={saveEdit}>
+                  <Ionicons name={'checkmark-sharp'} color={Colors.green} size={25}/>
                 </Pressable>
               </Row>
             ) :
@@ -137,22 +141,18 @@ export default function List() {
               <Row style={styles.item}>
                 <Row gap={Spacing.md}>
                   <Pressable onPress={() => toggleShoppingItem(item.id)}>
-                    <ThemedText variant="header2" color={Colors.mint}>{item.checked===0 ? '◇' : '◆'}</ThemedText>
+                    <ThemedText variant="header" color={Colors.green}>{item.checked===0 ? '◇' : '◆'}</ThemedText>
                   </Pressable>
-                  <ThemedText style={{textDecorationLine: item.checked===0 ? 'none' : 'line-through'}}>
+                  <ThemedText variant="list" style={{textDecorationLine: item.checked===0 ? 'none' : 'line-through'}}>
                     {item.name} — {item.quantity} {item.unit}
                   </ThemedText>
                 </Row>
                 <Row gap={Spacing.sm} >
-                  <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={() => startEdit(item)}>
-                  <View style={styles.button}>
-                    <ThemedText >✎</ThemedText>
-                  </View>
+                  <Pressable onPress={() => startEdit(item)}>
+                    <Ionicons name={'pencil-sharp'} color={Colors.green} size={25}/>
                 </Pressable>
-                <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={() => removeShoppingItem(item.id)}>
-                  <View style={styles.button}>
-                    <Ionicons name="trash-outline"/>
-                  </View>
+                <Pressable onPress={() => removeShoppingItem(item.id)}>
+                    <Ionicons name="trash-outline" color={Colors.green} size={25}/>
                 </Pressable>
                 </Row>
               </Row>
@@ -161,7 +161,7 @@ export default function List() {
           ))}
           {shoppingList.length > 0 && (
             <Pressable style={styles.buttonReinit} onPress={clearList}>
-              <ThemedText style={styles.buttonReinit} color={Colors.green} variant="link">✦ Réinitialiser la liste</ThemedText>
+              <ThemedText style={styles.buttonReinit} color={Colors.green} variant="link">- Réinitialiser la liste</ThemedText>
             </Pressable> 
           )}
         </Card>
@@ -181,7 +181,8 @@ const styles = StyleSheet.create({
   header: {
     padding: Spacing.sm,
     paddingBottom: Spacing.xl,
-    height: 100,
+    paddingTop: Spacing.xxxl,
+    height: 175,
   },
   search: {
     gap: 8,
@@ -191,14 +192,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     flex: 1,
   },
-  buttonSave: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: Colors.mint,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    },
   noRecipe: {
     flex: 1,
     justifyContent: 'center',
@@ -206,19 +199,8 @@ const styles = StyleSheet.create({
   },
   buttonAdd: {
     padding: 8,
-    backgroundColor: Colors.mint,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 50,
-    borderColor: Colors.green,
-    borderWidth: 1,
-    borderBottomWidth: 3,
-  },
-  button: {
-    padding: 8,
-    backgroundColor: Colors.mint,
-    borderRadius: 8,
+    backgroundColor: Colors.mintLight,
+    borderRadius: Radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     height: 50,
@@ -231,22 +213,24 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    backgroundColor: Colors.vanilla,
-    borderColor: Colors.mint,
+    backgroundColor: Colors.mintLight,
+    borderColor: Colors.green,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: Radius.sm,
     flex: 1,
+    fontSize: FontSize.body,
   },
   picker: {
     borderWidth: 1,
-    borderColor: Colors.mint,
-    borderRadius: 8, 
+    borderColor: Colors.green,
+    backgroundColor: Colors.mintLight,
+    borderRadius: Radius.sm,
     overflow: 'hidden',
     width: 80,
     height: 50,
   },
   inputUnit: {
-    backgroundColor: Colors.vanilla,
+    backgroundColor: Colors.mintLight,
     width: '100%',
   },
   addItem: {
@@ -265,20 +249,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
 })

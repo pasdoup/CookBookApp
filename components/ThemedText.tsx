@@ -7,6 +7,11 @@ const styles = StyleSheet.create({
         fontFamily: FontFamily.body,
         fontWeight: 400,
     },
+    list: {
+        fontSize: FontSize.xl,
+        fontFamily: FontFamily.body,
+        fontWeight: 400,
+    },
     small: {
         fontSize: FontSize.small,
         fontFamily: FontFamily.body,
@@ -17,17 +22,17 @@ const styles = StyleSheet.create({
         fontFamily: FontFamily.header,
         fontWeight: 700,
     },
-    header2: {
+    bodyStrong: {
         fontSize: FontSize.header2,
         fontFamily: FontFamily.header,
         fontWeight: 700,
     },
     button: {
-        fontSize: FontSize.body,
+        fontSize: FontSize.xl,
         fontFamily: FontFamily.button,
         fontWeight: 600,
     },
-    bodyStrong: {
+    header2: {
         fontSize: FontSize.xxxl,
         fontFamily: FontFamily.body,
         fontWeight: 600,
