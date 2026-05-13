@@ -1,3 +1,4 @@
+import { Spacing } from "@/constants";
 import { StyleSheet, View } from "react-native";
 import { ThemedText } from "./ThemedText";
 
@@ -10,7 +11,13 @@ export function EmptyState({ message }: { message: string }) {
 }
 
 const s = StyleSheet.create({
-    emptyText:    { textAlign: 'center' },
-    emptyState:   { alignItems: 'center', justifyContent: 'center', paddingVertical: 48, paddingHorizontal: 20 },
-
+    emptyText: { 
+      textAlign: 'center' 
+    },
+    emptyState: { 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      paddingVertical: Spacing.xxxl, 
+      paddingHorizontal: Spacing.lg 
+    },
   });

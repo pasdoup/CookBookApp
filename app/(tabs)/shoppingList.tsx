@@ -51,53 +51,52 @@ export default function List() {
       {/*------------------------ Header ------------------------*/}
       <Card style={styles.header} color={Colors.mint}>
           <Row gap={Spacing.md}>
-              {/* <Image source={logos[logo]} style={styles.logo} /> */}
               <ThemedText variant="header">Liste de course</ThemedText>
               <ThemedText variant="header" color={Colors.green}>✦ ✦</ThemedText>
           </Row>
           <ThemedText variant="bodyStrong" color={Colors.green}>Qu'est qui faut acheter </ThemedText>
           <HeaderBorder/>
       </Card>
-        {/*------------------------ Add item ------------------------*/}
-        <Card>
-          <Card style={styles.addItem} color={Colors.mint}>
-            <Row gap={8}>
-              <TextInput
-                  placeholder="Ingrédient"
-                  value={name}
-                  onChangeText={setName}
-                  style={[styles.input]}
-                />
-              <TextInput
-                placeholder="Quantité"
-                value={quantity}
-                onChangeText={setQuantity}
-                keyboardType="numeric"
+      {/*------------------------------------------------ Add item ------------------------------------------------*/}
+      <Card>
+        <Card style={styles.addItem} color={Colors.mint}>
+          <Row gap={8}>
+            <TextInput
+                placeholder="Ingrédient"
+                value={name}
+                onChangeText={setName}
                 style={[styles.input]}
               />
-              <View style={styles.picker}>
-                <Picker 
-                  selectedValue={unit}
-                  onValueChange={setUnit}
-                  style={[styles.inputUnit]}
-                  dropdownIconColor={Colors.green}
-                  itemStyle={{fontSize: FontSize.body}}
-                  >
-                  {UNITS.map((u) => (
-                    <Picker.Item key={u} label={u} value={u} />
-                  ))}
-                </Picker>
-              </View>
-            </Row>
-            <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={handleAdd}>
-              <View style={styles.buttonAdd}>
-                <ThemedText variant="button">Ajouter</ThemedText>
-              </View>
+            <TextInput
+              placeholder="Quantité"
+              value={quantity}
+              onChangeText={setQuantity}
+              keyboardType="numeric"
+              style={[styles.input]}
+            />
+            <View style={styles.picker}>
+              <Picker 
+                selectedValue={unit}
+                onValueChange={setUnit}
+                style={[styles.inputUnit]}
+                dropdownIconColor={Colors.green}
+                itemStyle={{fontSize: FontSize.body}}
+                >
+                {UNITS.map((u) => (
+                  <Picker.Item key={u} label={u} value={u} />
+                ))}
+              </Picker>
+            </View>
+          </Row>
+          <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={handleAdd}>
+            <View style={styles.buttonAdd}>
+              <ThemedText variant="button">Ajouter</ThemedText>
+            </View>
           </Pressable>
-          </Card>
         </Card>
+      </Card>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
-      {/*------------------------ Items list ------------------------*/}
+      {/*------------------------------------------------ Items list ------------------------------------------------*/}
         <Card style={[styles.main]}>
           {shoppingList.length === 0 && (
             <EmptyState message={"La liste est vide."} />

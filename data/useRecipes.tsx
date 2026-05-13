@@ -70,7 +70,7 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
     setShoppingList(items);
   }
 
-  //--------------------------RECIPES-------------------------------------------------
+  //-------------------------- RECIPES -------------------------------------------------
 
   const addRecipe = useCallback(async (input: RecipeInput): Promise<Recipe> => {
     const saved = await dbInsert(input);
@@ -92,7 +92,7 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
   const getRecipe      = useCallback((id: number) => state.recipes.find(r => r.id === id), [state.recipes]);
   const searchRecipes  = useCallback((q: string, regime?: string, type?: string) => dbSearch(q, regime, type), []);
 
-  //---------------------------SHOPPINGLIST-----------------------------------------------------------------------------
+  //---------------------------SHOPPING LIST-----------------------------------------------------------------------------
 
   const addRecipeToShoppingList = useCallback(
     async (id: number) => {

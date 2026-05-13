@@ -23,7 +23,7 @@ export default function Recipe() {
     return (
       <SafeAreaView style={[ {backgroundColor: Colors.peach}]}>
         <Pressable onPress={router.dismissAll}>
-            <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
+          <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
         </Pressable> 
         <View style={[styles.header, {backgroundColor: Colors.peach}]}>
           <ThemedText variant="header">Go back</ThemedText>
@@ -38,7 +38,7 @@ export default function Recipe() {
     const handleDelete = () => {
     Alert.alert(
       'Supprimer la recette',
-      `Voulez-vous vraiment supprimer "${recipe.title}" ?`,
+      'Voulez-vous vraiment supprimer "${recipe.title}" ?',
       [
         { text: 'Annuler', style: 'cancel' },
         {
@@ -55,24 +55,23 @@ export default function Recipe() {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.peach}}>
-        {/*------------------------ Header -------------------a refaire -----*/}
-        <Card style={styles.header} color={Colors.peach}>
-          <Pressable onPress={router.dismissAll}>
-            <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
-          </Pressable> 
-            <Row gap={Spacing.md}>
-              <ThemedText variant="header" color={ Colors.orange }>{recipe.title}</ThemedText>
-              <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
-            </Row>
-            <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors.regimes} time={recipe.time} />
-            <HeaderBorder/>
-            <HeaderBorder/>
-        </Card>
+      {/*------------------------------------------------ Header ------------------------------------------------*/}
+      <Card style={styles.header} color={Colors.peach}>
+        <Pressable onPress={router.dismissAll}>
+          <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
+        </Pressable> 
+        <Row gap={Spacing.md}>
+          <ThemedText variant="header" color={ Colors.orange }>{recipe.title}</ThemedText>
+          <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
+        </Row>
+        <RecipeDesc type={recipe.type} regime={recipe.regime as keyof typeof Colors.regimes} time={recipe.time} />
+        <HeaderBorder/>
+      </Card>
 
       <ScrollView style={{ flex: 1 }}
         contentContainerStyle={{ flexGrow: 1 }}>
         <Card style={styles.main}>
-        {/*------------------------ Ingredients ------------------------*/}
+        {/*------------------------------------------------ Ingredients ------------------------------------------------*/}
           <Card style={styles.ingredients}>
             <ThemedText variant="header2">✿ Ingrédients</ThemedText>
             {recipe.ingredients.map((ingredient, index) => (
@@ -82,13 +81,13 @@ export default function Recipe() {
               </Row>
             ))}
           </Card>
-          {/*------------------------ Steps ------------------------*/}
+          {/*------------------------------------------------ Steps ----------------------------------------------------*/}
           <Card style={styles.steps}>
             <ThemedText variant="header2">✿ Étapes</ThemedText>
             {recipe.steps.map((step, index) => (
               <Row gap={Spacing.xs} key ={index}>
                 <View style={styles.stepCircle}>
-                    <ThemedText variant="small">{index + 1}</ThemedText>
+                  <ThemedText variant="small">{index + 1}</ThemedText>
                 </View>
                 <ThemedText variant="body">{step}</ThemedText>
               </Row>
@@ -96,20 +95,20 @@ export default function Recipe() {
           </Card>
         </Card>
       </ScrollView>
-          {/*------------------------ Actions ------------------------*/}
+      {/*--------------------------------------------------- Actions ---------------------------------------------------*/}
       <Card style={styles.actions}>
-          <Link href={{pathname: "/recipe/updateRecipe", params: {id: recipe.id}}} asChild>
-            <Pressable style={styles.button} android_ripple={{color: Colors.orange, foreground: true}}>
-              <Ionicons name="pencil-outline" size={32} color={ Colors.orange } />
-            </Pressable>
-          </Link>
-          <Pressable onPress={() => handleDelete()} style={styles.buttonDelete} android_ripple={{color: Colors.orange, foreground: true}}>
-            <Ionicons name="trash-outline" size={32} color={ Colors.orange } />
+        <Link href={{pathname: "/recipe/updateRecipe", params: {id: recipe.id}}} asChild>
+          <Pressable style={styles.button} android_ripple={{color: Colors.orange, foreground: true}}>
+            <Ionicons name="pencil-outline" size={32} color={ Colors.orange } />
           </Pressable>
-          <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={styles.button} android_ripple={{color: Colors.orange, foreground: true}}>
-            <Ionicons name="cart-outline" size={32} color={ Colors.orange }/>
-          </Pressable>
-        </Card>
+        </Link>
+        <Pressable onPress={() => handleDelete()} style={styles.buttonDelete} android_ripple={{color: Colors.orange, foreground: true}}>
+          <Ionicons name="trash-outline" size={32} color={ Colors.orange } />
+        </Pressable>
+        <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={styles.button} android_ripple={{color: Colors.orange, foreground: true}}>
+          <Ionicons name="cart-outline" size={32} color={ Colors.orange }/>
+        </Pressable>
+      </Card>
     </SafeAreaView>
   );
 }

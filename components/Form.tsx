@@ -27,7 +27,6 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
     );
     const [steps, setSteps] = useState<string[]>(recipe?.steps?.length ? recipe.steps : [''])
 
-
     const addIngredient = () => {
         setIngredients((prev) => [...prev, emptyIngredient()])
     }
@@ -64,24 +63,23 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
             })),
             steps: steps.filter(s => s.trim()),
         });
-        
     };
 
   return (
     <Card style={styles.container}>
-        {/*------------------------------------------------ Titre ------------------------------------------------------*/}
+        {/*------------------------------------------------ Title ------------------------------------------------------*/}
         <Card style={styles.info}>
             <ThemedText variant="header2"  color={ Colors.orange}>Titre</ThemedText>
             <TextInput value={title} onChangeText={setTitle} placeholder="Titre de la recette" style={[styles.input, {backgroundColor: Colors.vanilla}]} />
         </Card>
 
-        {/*----------------------------------------- Temps de préparation ----------------------------------------------*/}
+        {/*------------------------------------------------ Time -------------------------------------------------------*/}
         <Card style={styles.info}>
             <ThemedText variant="header2" color={Colors.orange}>Temps de préparation en minutes</ThemedText>
             <TextInput value={time.toString()} onChangeText={setTime} placeholder="30" style={[styles.input, {backgroundColor: Colors.vanilla}]} keyboardType="numeric"/>    
         </Card>
 
-        {/*-------------------------------------------- Type et régime -------------------------------------------------*/}
+        {/*------------------------------------------------ Type et regime -------------------------------------------------*/}
         <Card style={styles.info}>
             <ThemedText variant="header2" color={Colors.orange}>Type de la recette</ThemedText>
             <FlatList 
@@ -93,7 +91,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                     <Chip name={item} active={type === item} colorActive={Colors.peach} colorBorder={Colors.orange} color={Colors.peachLight}/>
                 </Pressable>} 
             keyExtractor={(item)=> item} 
-        />
+            />
         </Card>
         <Card style={styles.info}>
             <ThemedText variant="header2" color={Colors.orange}>Régime alimentaire</ThemedText>
@@ -106,9 +104,9 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                     <Chip name={item} active={regime === item} colorActive={Colors.peach} colorBorder={Colors.orange} color={Colors.peachLight}/>
                 </Pressable>} 
             keyExtractor={(item)=> item} 
-        />
+            />
         </Card>
-        {/*----------------------------------------------- Ingrédients -------------------------------------------------*/}
+        {/*------------------------------------------------ Ingredients -------------------------------------------------*/}
         <Card style={styles.ingredients}>
             <ThemedText variant="header2" color={Colors.orange}>✿ Liste des ingrédients</ThemedText>
                 {ingredients.map((ingredient, index) => (
@@ -148,7 +146,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                 <ThemedText variant="bodyStrong" color={ Colors.peach}>+ Ajouter un ingrédient</ThemedText>
             </Pressable>
         </Card>
-        {/*----------------------------------------- Etapes de préparation ----------------------------------------------*/}
+        {/*------------------------------------------------ Steps -----------------------------------------------------*/}
         <Card style={styles.steps}>
             <ThemedText variant="header2" color={Colors.orange}>✿ Etapes de préparation</ThemedText>
                 {steps.map((step, index) => (

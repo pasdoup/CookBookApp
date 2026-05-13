@@ -47,7 +47,7 @@ export default function Generator() {
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.lavander}]} edges={['top', 'left', 'right']}>
-    {/*------------------------ Header ------------------------*/}
+    {/*------------------------------------------------ Header ------------------------------------------------*/}
     <Card style={styles.header} color={Colors.lavander}>
         <Row gap={Spacing.md}>
             {/* <Image source={logos[logo]} style={styles.logo} /> */}
@@ -57,7 +57,7 @@ export default function Generator() {
         <ThemedText variant="header2" color={Colors.purple}>Besoin d'une idée pour ce soir? </ThemedText>
         <HeaderBorder/>
     </Card>
-    {/*------------------------ Filters ------------------------*/}
+    {/*------------------------------------------------ Filters ------------------------------------------------*/}
     <Card style={[styles.search]}>
       <ThemedText>Type de la recette</ThemedText>
       <FlatList 
@@ -93,7 +93,7 @@ export default function Generator() {
         </Pressable>} 
       />
     </Card>
-    {/*------------------------ Body ------------------------*/}
+    {/*------------------------------------------------ Body -------------------------------------------------*/}
     <Card style={[styles.body]}>
       {noResult && (
         <Card style={styles.noRecipe}>

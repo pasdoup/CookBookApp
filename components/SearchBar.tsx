@@ -33,10 +33,6 @@ const styles = StyleSheet.create({
         margin: Spacing.sm,
         backgroundColor: Colors.bubblegumLight,
     },
-    logo: {
-        width: 16,
-        height: 16,
-    },
     input: {
         flex: 1,
         fontSize: FontSize.body,

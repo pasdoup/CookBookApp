@@ -21,16 +21,16 @@ export default function CreateRecipe() {
 
   return (
     <SafeAreaView style={[ styles.container, {backgroundColor: Colors.peach}]}>
-        <Card style={styles.header} color={Colors.peach}>
-          <Pressable onPress={router.back}>
-            <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
-          </Pressable> 
-            <Row gap={Spacing.md}>
-                <ThemedText variant="header" color={ Colors.orange }>Nouvelle recette</ThemedText>
-                <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
-            </Row>
-            <HeaderBorder/>
-        </Card>
+      <Card style={styles.header} color={Colors.peach}>
+        <Pressable onPress={router.back}>
+          <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
+        </Pressable> 
+          <Row gap={Spacing.md}>
+              <ThemedText variant="header" color={ Colors.orange }>Nouvelle recette</ThemedText>
+              <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
+          </Row>
+          <HeaderBorder/>
+      </Card>
       <ScrollView>
         <Card>
           <Form onSubmit={handleSubmit} submitLabel="Créer la recette"/>

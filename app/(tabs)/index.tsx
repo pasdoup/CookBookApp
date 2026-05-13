@@ -41,17 +41,16 @@ export default function Index() {
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.bubblegum}]} edges={['top', 'left', 'right']}>
-      {/*------------------------ Header ------------------------*/}
+      {/*------------------------------------------------ Header ------------------------------------------------*/}
       <Card style={styles.header} color={Colors.bubblegum}>
           <Row gap={Spacing.md}>
-              {/* <Image source={logos[logo]} style={styles.logo} /> */}
               <ThemedText variant="header">Mon livre de recettes</ThemedText>
               <ThemedText variant="header" color={Colors.rose}>✦ ✦</ThemedText>
           </Row>
           <ThemedText variant="bodyStrong" color={Colors.rose}>Touver une bonne recette </ThemedText>
           <HeaderBorder/>
       </Card>
-      {/*------------------------ Search & Filters ------------------------*/}
+      {/*------------------------------------------------ Search & Filters --------------------------------------*/}
       <Card style={[styles.search]}>
         <SearchBar value={query} onChange={setQuery} />
         <FlatList 
@@ -76,7 +75,7 @@ export default function Index() {
           keyExtractor={(item)=> item} 
         />
       </Card>
-      {/*------------------------ Body ------------------------*/}
+      {/*------------------------------------------------ Body -------------------------------------------------*/}
       <Card style={[styles.body]}>
           <FlatList 
             data={results} 
