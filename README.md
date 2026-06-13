@@ -1,3 +1,9 @@
+# CookBook App
+
+I'm still not sure if I want you to have access to that... So please be nice, it's my first mobile app and I need to be reassure 🙈
+
+ 
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

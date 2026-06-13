@@ -8,7 +8,7 @@ import { RecipeInput } from "@/data/types";
 import { useRecipes } from "@/data/useRecipes";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
-import { Pressable, ScrollView, StyleSheet } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateRecipe() {
@@ -21,21 +21,26 @@ export default function CreateRecipe() {
 
   return (
     <SafeAreaView style={[ styles.container, {backgroundColor: Colors.peach}]}>
-      <Card style={styles.header} color={Colors.peach}>
-        <Pressable onPress={router.back}>
-          <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
-        </Pressable> 
-          <Row gap={Spacing.md}>
-              <ThemedText variant="header" color={ Colors.orange }>Nouvelle recette</ThemedText>
-              <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
-          </Row>
-          <HeaderBorder/>
-      </Card>
-      <ScrollView>
-        <Card>
-          <Form onSubmit={handleSubmit} submitLabel="Créer la recette"/>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={[styles.container]}
+      >
+        <Card style={styles.header} color={Colors.peach}>
+          <Pressable onPress={router.back}>
+            <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
+          </Pressable> 
+            <Row gap={Spacing.md}>
+                <ThemedText variant="header" color={ Colors.orange }>Nouvelle recette</ThemedText>
+                <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
+            </Row>
+            <HeaderBorder/>
         </Card>
-      </ScrollView>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
+          <Card>
+            <Form onSubmit={handleSubmit} submitLabel="Créer la recette"/>
+          </Card>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

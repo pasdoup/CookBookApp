@@ -8,7 +8,8 @@ import { formatIngredient } from "@/data/types";
 import { useRecipes } from "@/data/useRecipes";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, router, useLocalSearchParams } from "expo-router";
-import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -18,6 +19,7 @@ export default function Recipe() {
 
   const recipe = getRecipe(Number(params.id));
 
+  const [modalVisible, setModalVisible] = useState(false);
 
   if (!recipe) {
     return (
@@ -36,22 +38,10 @@ export default function Recipe() {
   }
 
     const handleDelete = () => {
-    Alert.alert(
-      'Supprimer la recette',
-      'Voulez-vous vraiment supprimer "${recipe.title}" ?',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Supprimer',
-          style: 'destructive',
-          onPress: async () => {
-            await deleteRecipe(recipe.id);
-            router.dismissAll()
-          },
-        },
-      ]
-    );
-  };
+      deleteRecipe(recipe.id);
+      setModalVisible(false);
+      router.dismissAll();
+    };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.peach}}>
@@ -87,9 +77,9 @@ export default function Recipe() {
             {recipe.steps.map((step, index) => (
               <Row gap={Spacing.xs} key ={index}>
                 <View style={styles.stepCircle}>
-                  <ThemedText variant="small">{index + 1}</ThemedText>
+                  <ThemedText variant="small">{step.order}</ThemedText>
                 </View>
-                <ThemedText variant="body">{step}</ThemedText>
+                <ThemedText variant="body">{step.value}</ThemedText>
               </Row>
             ))}
           </Card>
@@ -102,13 +92,37 @@ export default function Recipe() {
             <Ionicons name="pencil-outline" size={32} color={ Colors.orange } />
           </Pressable>
         </Link>
-        <Pressable onPress={() => handleDelete()} style={styles.buttonDelete} android_ripple={{color: Colors.orange, foreground: true}}>
+        <Pressable onPress={() => setModalVisible(true)} style={styles.buttonDelete} android_ripple={{color: Colors.orange, foreground: true}}>
           <Ionicons name="trash-outline" size={32} color={ Colors.orange } />
         </Pressable>
         <Pressable onPress={() => addRecipeToShoppingList(Number(params.id))} style={styles.button} android_ripple={{color: Colors.orange, foreground: true}}>
           <Ionicons name="cart-outline" size={32} color={ Colors.orange }/>
         </Pressable>
       </Card>
+      <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <ThemedText variant="button">Voulez-vous vraiment supprimer la recette {recipe.title} ?</ThemedText>
+              <Row gap={Spacing.md}>
+                <Pressable
+                style={styles.buttonDelete}
+                onPress={() => setModalVisible(false)}
+                android_ripple={{color: Colors.orange, foreground: true}}>
+                <ThemedText variant="button">Annuler</ThemedText>
+              </Pressable>
+              <Pressable
+                style={styles.button}
+                onPress={() => handleDelete()}
+                android_ripple={{color: Colors.orange, foreground: true}}>
+                <ThemedText variant="button">Supprimer</ThemedText>
+              </Pressable>
+            </Row>
+            </View>
+          </View>
+        </Modal>
     </SafeAreaView>
   );
 }
@@ -136,6 +150,7 @@ const styles = StyleSheet.create({
   steps: {
     gap: Spacing.md,
     flex: 1,
+    paddingRight: Spacing.lg,
   },
   stepCircle: {
     width: Spacing.xl, 
@@ -180,4 +195,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: Spacing.sm,
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    gap: Spacing.xl,
+    margin: Spacing.xl,
+    backgroundColor: Colors.vanilla,
+    borderRadius: Radius.lg,
+    padding: Spacing.xxl,
+    alignItems: 'center',
+    shadowColor: Colors.text,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+
 })

@@ -24,7 +24,7 @@ export function Chip ({style, name, color, colorActive, colorBorder, time, activ
                 : color? 
                     {backgroundColor: color} 
                     : {backgroundColor: Colors.cream},
-                {borderColor: colorBorder, borderWidth: 1}]} 
+                {borderColor: colorBorder, borderWidth: 1, borderBottomWidth: active ? 3 : 1}]} 
                 {...rest} >
         {time ? 
             <Image source={require("@/assets/images/time-left.png")} style={styles.time} /> 

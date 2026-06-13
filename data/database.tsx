@@ -1,8 +1,8 @@
 import * as SQLite from "expo-sqlite";
-import { Ingredient, Recipe, RecipeInput, ShoppingItem } from "./types";
+import { Ingredient, Recipe, RecipeInput, ShoppingItem, Step } from "./types";
 
 
-const DB_VERSION = 3;
+const DB_VERSION = 1;
 let _db: SQLite.SQLiteDatabase | null = null;
 let _dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
@@ -81,7 +81,7 @@ function _rowToRecipe(row: RecipeRow): Recipe {
     type:        row.type   as Recipe['type'],
     regime:      row.regime as Recipe['regime'],
     ingredients: JSON.parse(row.ingredients) as Ingredient[],
-    steps:       JSON.parse(row.steps)       as string[],
+    steps:       JSON.parse(row.steps)       as Step[],
   };
 }
 
@@ -126,9 +126,9 @@ export async function dbDelete(id: number): Promise<void> {
   await db.runAsync('DELETE FROM recipes WHERE id = ?', [id]);
 }
 
-export async function dbSearch(q: string, regime?: string, type?: string): Promise<Recipe[]> {
-  const db     = await getDb();
-  const parts: string[]           = [];
+export async function dbSearch(q: string, regimes: string[], types: string[]): Promise<Recipe[]> {
+  const db = await getDb();
+  const parts: string[] = [];
   const params: (string | number)[] = [];
 
   if (q.trim()) {
@@ -136,8 +136,14 @@ export async function dbSearch(q: string, regime?: string, type?: string): Promi
     const term = `%${q.toLowerCase()}%`;
     params.push(term, term);
   }
-  if (regime && regime !== 'Tous') { parts.push('regime = ?'); params.push(regime); }
-  if (type   && type   !== 'Tous') { parts.push('type = ?');   params.push(type);   }
+  if (regimes.length > 0) {
+    parts.push(`regime IN (${regimes.map(() => '?').join(',')})`);
+    params.push(...regimes);
+  }
+  if (types.length > 0) {
+    parts.push(`type IN (${types.map(() => '?').join(',')})`);
+    params.push(...types);
+  }
 
   const where = parts.length ? `WHERE ${parts.join(' AND ')}` : '';
   const rows  = await db.getAllAsync<RecipeRow>(
@@ -204,7 +210,7 @@ export async function updateItem(id: number, name: string, quantity: number, uni
 async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {
 
   const ins = (title: string, time: number, type: string, regime: string,
-               ingredients: Ingredient[], steps: string[]) =>
+               ingredients: Ingredient[], steps: Step[]) =>
     db.runAsync(
       'INSERT INTO recipes (title, time, type, regime, ingredients, steps) VALUES (?, ?, ?, ?, ?, ?)',
       [title, time, type, regime, JSON.stringify(ingredients), JSON.stringify(steps)]
@@ -214,17 +220,18 @@ async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {
     [{ name: 'chocolat', quantity: 200, unit: 'g' }, { name: 'beurre demi-sel', quantity: 200, unit: 'g' },
      { name: 'oeufs', quantity: 4, unit: '' }, { name: 'sucre', quantity: 200, unit: 'g' },
      { name: "farine", quantity: 1, unit: 'cs' }],
-    ["Préchauffer le four à 180°C.","Dans une casserole à feu doux, faire fondre le beurre avec le chocolat.", 
-      "Dans un saladier battre les oeufs avec le sucre et ajouter la farine", "Incorporer le chocolat fondu dans le saladier.", 
-      "Verser la préparation dans un moule bien beurré", "Mettre au four 20min."]
+    [{ order: 1, value: "Préchauffer le four à 180°C." }, { order: 2, value: "Dans une casserole à feu doux, faire fondre le beurre avec le chocolat." },
+      { order: 3, value: "Dans un saladier battre les oeufs avec le sucre et ajouter la farine" }, { order: 4, value: "Incorporer le chocolat fondu dans le saladier." },
+      { order: 5, value: "Verser la préparation dans un moule bien beurré" }, { order: 6, value: "Mettre au four 20min." }]
   );
 
   await ins('Poulet curry', 20, 'Plat', 'Standard',
     [{ name: 'blanc de poulet', quantity: 200, unit: 'g' }, { name: 'lait de coco', quantity: 10, unit: 'cl' },
      { name: 'crème fraiche', quantity: 25, unit: 'cl' }, { name: 'curry', quantity: 1, unit: '' }],
-    ["Découper le blanc de poulet en petits morceaux.",
-      "Faire dorer le poulet dans une casserole.", 
-      "Ajouter la crème et le coco à la casserole.", 
-      "Ajouter au tant de curry souhaité.", "Laisser réduire dans la casserole."]
+    [{ order: 1, value: "Découper le blanc de poulet en petits morceaux." },
+      { order: 2, value: "Faire dorer le poulet dans une casserole." },
+      { order: 3, value: "Ajouter la crème et le coco à la casserole." },
+      { order: 4, value: "Ajouter au tant de curry souhaité." },
+      { order: 5, value: "Laisser réduire dans la casserole." }]
   );
 }

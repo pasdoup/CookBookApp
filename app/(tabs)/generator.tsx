@@ -6,7 +6,7 @@ import { RecipeCard } from "@/components/recipe/RecipeCard";
 import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors, Radius, Spacing } from "@/constants";
-import { Recipe, RECIPE_REGIMES, RECIPE_TYPES, TIMES } from "@/data/types";
+import { Recipe, RECIPE_REGIMES, RECIPE_TYPES, RecipeRegime, RecipeType, TIMES } from "@/data/types";
 import { useRecipes } from "@/data/useRecipes";
 import { useCallback, useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
@@ -16,20 +16,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Generator() {
   const { recipes } = useRecipes();
 
-  const [regime,      setRegime]      = useState('Tous');
-  const [type,        setType]        = useState('Tous');
-  const [time,     setTime]    = useState('Toutes');
+  const [regimeFilters, setRegimeFilters] = useState<RecipeRegime[]>([]);
+  const [typeFilters,   setTypeFilters]   = useState<RecipeType[]>([]);
+  const [time,     setTime]    = useState(0);
   const [result,      setResult]      = useState<Recipe | null>(null);
   const [noResult,    setNoResult]    = useState(false);
   const [history,     setHistory]     = useState<number[]>([]);
   
   const getFiltered = useCallback((): Recipe[] => {
     let filterRecipes = recipes;
-    if (regime !== 'Tous') filterRecipes = filterRecipes.filter(r => r.regime === regime);
-    if (type   !== 'Tous') filterRecipes = filterRecipes.filter(r => r.type   === type);
-    if (time   !== 'Toutes') filterRecipes = filterRecipes.filter(r => r.time   <= Number(time));
+    if (regimeFilters.length > 0) filterRecipes = filterRecipes.filter(r => regimeFilters.includes(r.regime));
+    if (typeFilters.length > 0) filterRecipes = filterRecipes.filter(r => typeFilters.includes(r.type));
+    if (time   !== 0) filterRecipes = filterRecipes.filter(r => r.time   <= time);
     return filterRecipes;
-  }, [recipes, regime, type, time]);
+  }, [recipes, regimeFilters, typeFilters, time]);
 
   const draw = useCallback(() => {
     const filtered = getFiltered();
@@ -44,6 +44,13 @@ export default function Generator() {
     setNoResult(false);
 
   }, [getFiltered, history]);
+
+  function toggle<T>(arr: T[], val: T): T[] {
+    return arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
+  }
+  function toggleTime(time: number,val: number): number {
+    return time == val ? 0 : val;
+  }
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.lavander}]} edges={['top', 'left', 'right']}>
@@ -62,23 +69,23 @@ export default function Generator() {
       <ThemedText>Type de la recette</ThemedText>
       <FlatList 
         horizontal 
-        data={['Tous', ...RECIPE_TYPES]} 
+        data={RECIPE_TYPES} 
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item}
         renderItem={({item}) => 
-        <Pressable onPress={() => {setType(item)}}>
-          <Chip name={item} active={type === item} colorActive={Colors.lavander} colorBorder={Colors.purple} color={Colors.lavanderLight}/>
+        <Pressable onPress={() => {setTypeFilters(prev => toggle(prev, item))}}>
+          <Chip name={item} active={typeFilters.includes(item)} colorActive={Colors.lavander} colorBorder={Colors.purple} color={Colors.lavanderLight}/>
         </Pressable>} 
         />
       <ThemedText>Régime de la recette</ThemedText>
       <FlatList 
         horizontal 
-        data={['Tous', ...RECIPE_REGIMES]} 
+        data={RECIPE_REGIMES} 
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
         keyExtractor={(item)=> item} 
         renderItem={({item}) => 
-        <Pressable onPress={() => { setRegime(item)}}>
-          <Chip name={item} active={regime === item} colorActive={Colors.lavander} colorBorder={Colors.purple} color={Colors.lavanderLight}/>
+        <Pressable onPress={() => { setRegimeFilters(prev => toggle(prev, item))}}>
+          <Chip name={item} active={regimeFilters.includes(item)} colorActive={Colors.lavander} colorBorder={Colors.purple} color={Colors.lavanderLight}/>
         </Pressable>} 
         />
       <ThemedText>Durée de la recette</ThemedText>
@@ -86,9 +93,9 @@ export default function Generator() {
         horizontal 
         data={TIMES} 
         contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
-        keyExtractor={(item)=> item} 
+        keyExtractor={(item) => item.toString()} 
         renderItem={({item}) => 
-        <Pressable onPress={() => { setTime(item)}}>
+        <Pressable onPress={() => { setTime(prev => toggleTime(prev, item))}}>
           <Chip name={`<= ${item}`} active={time === item} colorActive={Colors.lavander} colorBorder={Colors.purple} color={Colors.lavanderLight}/>
         </Pressable>} 
       />

@@ -4,8 +4,16 @@ export type Ingredient = {
   unit:     string;
 };
 
+export type Step = {
+  order:   number;
+  value:   string;
+};
+
 export function emptyIngredient(): Ingredient {
   return { name: '', quantity: 0, unit: '' };
+}
+export function emptyStep(): Step {
+  return { order: 1, value: '' };
 }
 
 export function formatIngredient(ing: Ingredient): string {
@@ -33,7 +41,7 @@ export type RecipeRegime     = 'Standard' | 'Végé' | 'Vegan';
 
 export const RECIPE_TYPES: RecipeType[] = ['Entrée', 'Plat', 'Dessert', 'Boisson', 'Snack'];
 export const RECIPE_REGIMES:      RecipeRegime[]     = ['Standard', 'Végé', 'Vegan'];
-export const TIMES: string[] = ['Toutes', '20', '30', '45']
+export const TIMES: number[] = [20, 30, 45]
 
 export type Recipe = {
   id:          number;
@@ -42,7 +50,7 @@ export type Recipe = {
   type:        RecipeType;
   regime:      RecipeRegime;
   ingredients: Ingredient[];
-  steps:       string[];
+  steps:       Step[];
 };
 
 export type RecipeInput = Omit<Recipe, 'id'>;

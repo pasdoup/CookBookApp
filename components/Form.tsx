@@ -1,9 +1,11 @@
 import { Colors, FontSize, Radius, Spacing } from "@/constants";
-import { emptyIngredient, Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeInput, RecipeRegime, RecipeType, UNITS } from "@/data/types";
+import { emptyIngredient, emptyStep, Ingredient, RECIPE_REGIMES, RECIPE_TYPES, RecipeInput, RecipeRegime, RecipeType, Step, UNITS } from "@/data/types";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Alert, FlatList, Pressable, StyleSheet, TextInput, TextInputContentSizeChangeEvent, View } from "react-native";
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Card } from "./Card";
 import { Chip } from "./Chip";
 import { Row } from "./Row";
@@ -25,7 +27,9 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
     const [ingredients, setIngredients] = useState<Ingredient[]>(
         recipe.ingredients?.length ? recipe.ingredients : [emptyIngredient()]
     );
-    const [steps, setSteps] = useState<string[]>(recipe?.steps?.length ? recipe.steps : [''])
+    const [steps, setSteps] = useState<Step[]>(
+        recipe.steps?.length ? recipe.steps : [emptyStep()]
+    );
 
     const addIngredient = () => {
         setIngredients((prev) => [...prev, emptyIngredient()])
@@ -34,17 +38,28 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
         setIngredients((prev) => prev.filter((_, i) => i !== id))
     }
     const updateIngredient = (i: number, field: keyof Ingredient, val: string | number) =>
-    setIngredients(prev => prev.map((ing, idx) => idx === i ? { ...ing, [field]: val } : ing));
+        setIngredients(prev => prev.map((ing, idx) => idx === i ? { ...ing, [field]: val } : ing));
 
     const addStep = () => {
-        setSteps((prev) => [...prev, ''])
+        setSteps((prev) => reorder([...prev, emptyStep()]));
+        setStepHeights(prev => [...prev, 50]);
     }
     const removeStep = (id: number) => {
-        setSteps((prev) => prev.filter((_, i) => i !== id))
+        setSteps((prev) => reorder(prev.filter((_, i) => i !== id)));
+        setStepHeights(prev => prev.filter((_, i) => i !== id));
     }
     const updateStep = (index: number, text: string) => {
-        setSteps((prev) => prev.map((step, i) => i === index ? text : step))
+        setSteps((prev) => prev.map((step, i) => i === index ? { ...step, value: text } : step))
     }
+    const [stepHeights, setStepHeights] = useState<number[]>(
+        steps.map(() => 50)
+    );
+    const onStepContentSizeChange = (index: number, event: TextInputContentSizeChangeEvent) => {
+        const newHeight = Math.max(50, event.nativeEvent.contentSize.height);
+        setStepHeights(prev => prev.map((h, i) => i === index ? newHeight : h));
+    };
+    const reorder = (list: Step[]): Step[] =>
+        list.map((s, i) => ({ ...s, order: i + 1 }));
 
     const handleSubmit = async () => {
         if (!title.trim()) { Alert.alert('Champ requis', 'Le titre est obligatoire.'); return; }
@@ -61,7 +76,7 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
                 quantity: Number(i.quantity) || 0,
                 unit: i.unit.trim(),
             })),
-            steps: steps.filter(s => s.trim()),
+            steps: steps.filter(s => s.value.trim()),
         });
     };
 
@@ -149,24 +164,60 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
         {/*------------------------------------------------ Steps -----------------------------------------------------*/}
         <Card style={styles.steps}>
             <ThemedText variant="header2" color={Colors.orange}>✿ Etapes de préparation</ThemedText>
-                {steps.map((step, index) => (
-                    <Row key={index} gap={Spacing.sm}>
-                        <View style={styles.stepCircle}>
-                            <ThemedText variant="small">{index + 1}</ThemedText>
-                        </View>
-                        <TextInput 
-                            value={step}
-                            onChangeText={(text) => updateStep(index, text)}
-                            placeholder={`Étape ${index + 1}`}
-                            style={[styles.input, {backgroundColor: Colors.vanilla, flex: 1}]}
+            <GestureHandlerRootView>
+                <DraggableFlatList
+                        data={steps}
+                        scrollEnabled={false}
+                        keyExtractor={(_, index) => `draggable-item-${index}`}
+                        onDragEnd={({ data }) => {
+                            setSteps(reorder(data));
+                            setStepHeights(prev => {
+                                const oldSteps = steps;
+                                return data.map(item => {
+                                    const oldIndex = oldSteps.findIndex(s => s === item);
+                                    return oldIndex !== -1 ? (prev[oldIndex] ?? 50) : 50;
+                                });
+                            });
+                        }} 
+                        renderItem={({ item: step, getIndex, drag, isActive }: RenderItemParams<Step>) => {
+                            const index = getIndex() ?? 0;
+                            return (
+                            <ScaleDecorator activeScale={1.02}>
+                                <Row
+                                key={index}
+                                gap={Spacing.sm}
+                                style={[
+                                    styles.stepRow,
+                                    isActive && styles.stepRowActive,
+                                ]}
+                                >
+                                <Pressable onLongPress={drag} delayLongPress={150}>
+                                    <Ionicons name="reorder-three-outline" color={Colors.orange} size={25} />
+                                </Pressable>
+
+                                <TextInput
+                                    value={step.value}
+                                    multiline={true}
+                                    onContentSizeChange={(e) => onStepContentSizeChange(index, e)}
+                                    onChangeText={(text) => updateStep(index, text)}
+                                    placeholder={`Étape ${index + 1}`}
+                                    style={[
+                                    styles.input,
+                                    { backgroundColor: Colors.vanilla, flex: 1, height: stepHeights[index] ?? 50 },
+                                    ]}
+                                />
+
+                                {steps.length > 1 && (
+                                    <Pressable onPress={() => removeStep(index)}>
+                                        <Ionicons name="trash-outline" color={Colors.peach} size={25} />
+                                    </Pressable>
+                                )}
+                                </Row>
+                            </ScaleDecorator>
+                            );
+                        }}
                         />
-                        {steps.length > 0 && (
-                            <Pressable onPress={() => removeStep(index)}>
-                                <Ionicons name="trash-outline" color={Colors.peach} size={25}/>
-                            </Pressable>
-                        )}
-                    </Row>
-                ))}
+                    </GestureHandlerRootView>
             <Pressable onPress={addStep}>
                 <ThemedText variant="bodyStrong" color={ Colors.peach}>+ Ajouter une étape</ThemedText>
             </Pressable> 
@@ -192,7 +243,6 @@ const styles = StyleSheet.create({
         borderColor: Colors.orange,
         borderWidth: 1,
         borderRadius: 8,
-        height: 50,
         backgroundColor: Colors.vanilla,
         flex: 1,
         fontSize: FontSize.body,
@@ -254,5 +304,18 @@ const styles = StyleSheet.create({
     info: {
         gap: Spacing.sm,
         paddingBottom: Spacing.md,
+    },
+    stepRow: {
+        paddingVertical: Spacing.xs,
+        backgroundColor: Colors.vanilla,
+        borderRadius: Radius.md,
+        },
+    stepRowActive: {
+        backgroundColor: Colors.peachLight,
+        shadowColor: Colors.text,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 6,
     },
 })

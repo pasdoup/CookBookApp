@@ -20,23 +20,23 @@ export default function Index() {
 
   const { searchRecipes } = useRecipes();
   const [query,        setQuery]        = useState('');
-  const [regimeFilter, setRegimeFilter] = useState<RecipeRegime | typeof ALL>(ALL);
-  const [typeFilter,   setTypeFilter]   = useState<RecipeType   | typeof ALL>(ALL);
+  const [regimeFilters, setRegimeFilters] = useState<RecipeRegime[]>([]);
+  const [typeFilters,   setTypeFilters]   = useState<RecipeType[]>([]);
   const [results,      setResults]      = useState<Recipe[]>([]);
 
 
-  const run = useCallback(async (q: string, regime: string, type: string) => {
-      const res = await searchRecipes(
-        q,
-        regime !== ALL ? regime : undefined,
-        type   !== ALL ? type   : undefined
-      );
+  const run = useCallback(async (q: string, regime: RecipeRegime[], type: RecipeType[]) => {
+      const res = await searchRecipes(q, regime, type);
       setResults(res);
   }, [searchRecipes]);
 
   useEffect(() => {
-     run(query, regimeFilter, typeFilter)
-  }, [results, query, regimeFilter, typeFilter, run]);
+     run(query, regimeFilters, typeFilters)
+  }, [ query, regimeFilters, typeFilters, run]);
+
+  function toggle<T>(arr: T[], val: T): T[] {
+    return arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
+  }
 
 
   return (
@@ -55,22 +55,22 @@ export default function Index() {
         <SearchBar value={query} onChange={setQuery} />
         <FlatList 
           horizontal 
-          data={[ALL, ...RECIPE_TYPES]} 
+          data={RECIPE_TYPES} 
           contentContainerStyle={{gap: Spacing.xs, paddingHorizontal: Spacing.sm}} 
-          keyExtractor={(item)=> item} 
+          keyExtractor={item => item} 
           renderItem={({item}) => 
-            <Pressable onPress={() =>  setTypeFilter(item as RecipeType | typeof ALL)}>
-              <Chip name={item} active={typeFilter === item}  colorActive={Colors.bubblegum} colorBorder={Colors.rose} color={Colors.bubblegumLight}/>
+            <Pressable onPress={() =>  setTypeFilters(prev => toggle(prev, item))}>
+              <Chip name={item} active={typeFilters.includes(item)}  colorActive={Colors.bubblegum} colorBorder={Colors.rose} color={Colors.bubblegumLight}/>
             </Pressable>
           } 
         />
         <FlatList 
           horizontal 
-          data={[ALL, ...RECIPE_REGIMES]} 
+          data={RECIPE_REGIMES} 
           contentContainerStyle={{gap: 8, paddingHorizontal: 12}} 
           renderItem={({item}) => 
-            <Pressable onPress={() => setRegimeFilter(item as RecipeRegime | typeof ALL)}>
-              <Chip name={item} active={regimeFilter === item} colorActive={Colors.bubblegum} colorBorder={Colors.rose} color={Colors.bubblegumLight}/>
+            <Pressable onPress={() => setRegimeFilters(prev => toggle(prev, item))}>
+              <Chip name={item} active={regimeFilters.includes(item)} colorActive={Colors.bubblegum} colorBorder={Colors.rose} color={Colors.bubblegumLight}/>
             </Pressable>} 
           keyExtractor={(item)=> item} 
         />

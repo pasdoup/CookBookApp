@@ -9,7 +9,7 @@ import { useRecipes } from "@/data/useRecipes";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -48,124 +48,129 @@ export default function List() {
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors.mint}]} edges={['top', 'left', 'right']}>
-      {/*------------------------ Header ------------------------*/}
-      <Card style={styles.header} color={Colors.mint}>
-          <Row gap={Spacing.md}>
-              <ThemedText variant="header">Liste de course</ThemedText>
-              <ThemedText variant="header" color={Colors.green}>✦ ✦</ThemedText>
-          </Row>
-          <ThemedText variant="bodyStrong" color={Colors.green}>Qu'est qui faut acheter </ThemedText>
-          <HeaderBorder/>
-      </Card>
-      {/*------------------------------------------------ Add item ------------------------------------------------*/}
-      <Card>
-        <Card style={styles.addItem} color={Colors.mint}>
-          <Row gap={8}>
-            <TextInput
-                placeholder="Ingrédient"
-                value={name}
-                onChangeText={setName}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[styles.container]} 
+    >
+        {/*------------------------ Header ------------------------*/}
+        <Card style={styles.header} color={Colors.mint}>
+            <Row gap={Spacing.md}>
+                <ThemedText variant="header">Liste de course</ThemedText>
+                <ThemedText variant="header" color={Colors.green}>✦ ✦</ThemedText>
+            </Row>
+            <ThemedText variant="bodyStrong" color={Colors.green}>Qu'est qui faut acheter </ThemedText>
+            <HeaderBorder/>
+        </Card>
+        {/*------------------------------------------------ Add item ------------------------------------------------*/}
+        <Card>
+          <Card style={styles.addItem} color={Colors.mint}>
+            <Row gap={8}>
+              <TextInput
+                  placeholder="Ingrédient"
+                  value={name}
+                  onChangeText={setName}
+                  style={[styles.input]}
+                />
+              <TextInput
+                placeholder="Quantité"
+                value={quantity}
+                onChangeText={setQuantity}
+                keyboardType="numeric"
                 style={[styles.input]}
               />
-            <TextInput
-              placeholder="Quantité"
-              value={quantity}
-              onChangeText={setQuantity}
-              keyboardType="numeric"
-              style={[styles.input]}
-            />
-            <View style={styles.picker}>
-              <Picker 
-                selectedValue={unit}
-                onValueChange={setUnit}
-                style={[styles.inputUnit]}
-                dropdownIconColor={Colors.green}
-                itemStyle={{fontSize: FontSize.body}}
-                >
-                {UNITS.map((u) => (
-                  <Picker.Item key={u} label={u} value={u} />
-                ))}
-              </Picker>
-            </View>
-          </Row>
-          <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={handleAdd}>
-            <View style={styles.buttonAdd}>
-              <ThemedText variant="button">Ajouter</ThemedText>
-            </View>
-          </Pressable>
+              <View style={styles.picker}>
+                <Picker 
+                  selectedValue={unit}
+                  onValueChange={setUnit}
+                  style={[styles.inputUnit]}
+                  dropdownIconColor={Colors.green}
+                  itemStyle={{fontSize: FontSize.body}}
+                  >
+                  {UNITS.map((u) => (
+                    <Picker.Item key={u} label={u} value={u} />
+                  ))}
+                </Picker>
+              </View>
+            </Row>
+            <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={handleAdd}>
+              <View style={styles.buttonAdd}>
+                <ThemedText variant="button">Ajouter</ThemedText>
+              </View>
+            </Pressable>
+          </Card>
         </Card>
-      </Card>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
-      {/*------------------------------------------------ Items list ------------------------------------------------*/}
-        <Card style={[styles.main]}>
-          {shoppingList.length === 0 && (
-            <EmptyState message={"La liste est vide."} />
-          )}
-          {shoppingList.map((item) => (
-          <Card key={item.id} >
-            {editId === item.id ? (
-              <Row gap={Spacing.xxs} style={{ flex: 1 }}>
-                <TextInput
-                  value={editName}
-                  onChangeText={setEditName}
-                  style={styles.input}
-                />
-                <TextInput
-                  value={editQuantity}
-                  onChangeText={setEditQuantity}
-                  keyboardType="numeric"
-                  style={styles.input}
-                />
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+        {/*------------------------------------------------ Items list ------------------------------------------------*/}
+          <Card style={[styles.main]}>
+            {shoppingList.length === 0 && (
+              <EmptyState message={"La liste est vide."} />
+            )}
+            {shoppingList.map((item) => (
+            <Card key={item.id} >
+              {editId === item.id ? (
+                <Row gap={Spacing.xxs} style={{ flex: 1 }}>
+                  <TextInput
+                    value={editName}
+                    onChangeText={setEditName}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    value={editQuantity}
+                    onChangeText={setEditQuantity}
+                    keyboardType="numeric"
+                    style={styles.input}
+                  />
 
-                <View style={styles.picker}>
-                  <Picker 
-                    selectedValue={unit}
-                    onValueChange={setUnit}
-                    style={[styles.inputUnit]}
-                    dropdownIconColor={Colors.green}
-                    itemStyle={{fontSize: FontSize.body}}
-                    >
-                    {UNITS.map((u) => (
-                      <Picker.Item key={u} label={u} value={u} />
-                    ))}
-                  </Picker>
-                </View>
+                  <View style={styles.picker}>
+                    <Picker 
+                      selectedValue={unit}
+                      onValueChange={setUnit}
+                      style={[styles.inputUnit]}
+                      dropdownIconColor={Colors.green}
+                      itemStyle={{fontSize: FontSize.body}}
+                      >
+                      {UNITS.map((u) => (
+                        <Picker.Item key={u} label={u} value={u} />
+                      ))}
+                    </Picker>
+                  </View>
 
-                <Pressable onPress={saveEdit}>
-                  <Ionicons name={'checkmark-sharp'} color={Colors.green} size={25}/>
-                </Pressable>
-              </Row>
-            ) :
-            (
-              <Row style={styles.item}>
-                <Row gap={Spacing.md}>
-                  <Pressable onPress={() => toggleShoppingItem(item.id)}>
-                    <ThemedText variant="header" color={Colors.green}>{item.checked===0 ? '◇' : '◆'}</ThemedText>
+                  <Pressable onPress={saveEdit}>
+                    <Ionicons name={'checkmark-sharp'} color={Colors.green} size={25}/>
                   </Pressable>
-                  <ThemedText variant="list" style={{textDecorationLine: item.checked===0 ? 'none' : 'line-through'}}>
-                    {item.name} — {item.quantity} {item.unit}
-                  </ThemedText>
                 </Row>
-                <Row gap={Spacing.sm} >
-                  <Pressable onPress={() => startEdit(item)}>
-                    <Ionicons name={'pencil-sharp'} color={Colors.green} size={25}/>
-                </Pressable>
-                <Pressable onPress={() => removeShoppingItem(item.id)}>
-                    <Ionicons name="trash-outline" color={Colors.green} size={25}/>
-                </Pressable>
+              ) :
+              (
+                <Row style={styles.item}>
+                  <Row gap={Spacing.md}>
+                    <Pressable onPress={() => toggleShoppingItem(item.id)}>
+                      <ThemedText variant="header" color={Colors.green}>{item.checked===0 ? '◇' : '◆'}</ThemedText>
+                    </Pressable>
+                    <ThemedText variant="list" style={{textDecorationLine: item.checked===0 ? 'none' : 'line-through'}}>
+                      {item.name} — {item.quantity == 0 ? '' : item.quantity} {item.unit ? item.unit : ''}
+                    </ThemedText>
+                  </Row>
+                  <Row gap={Spacing.sm} >
+                    <Pressable onPress={() => startEdit(item)}>
+                      <Ionicons name={'pencil-sharp'} color={Colors.green} size={25}/>
+                  </Pressable>
+                  <Pressable onPress={() => removeShoppingItem(item.id)}>
+                      <Ionicons name="trash-outline" color={Colors.green} size={25}/>
+                  </Pressable>
+                  </Row>
                 </Row>
-              </Row>
+              )}
+            </Card>
+            ))}
+            {shoppingList.length > 0 && (
+              <Pressable style={styles.buttonReinit} onPress={clearList}>
+                <ThemedText style={styles.buttonReinit} color={Colors.green} variant="link">- Réinitialiser la liste</ThemedText>
+              </Pressable> 
             )}
           </Card>
-          ))}
-          {shoppingList.length > 0 && (
-            <Pressable style={styles.buttonReinit} onPress={clearList}>
-              <ThemedText style={styles.buttonReinit} color={Colors.green} variant="link">- Réinitialiser la liste</ThemedText>
-            </Pressable> 
-          )}
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+    </KeyboardAvoidingView>
+      </SafeAreaView>
   );
 }
 
