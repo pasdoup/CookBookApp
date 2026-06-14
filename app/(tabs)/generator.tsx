@@ -9,7 +9,7 @@ import { Colors, Radius, Spacing } from "@/constants";
 import { Recipe, RECIPE_REGIMES, RECIPE_TYPES, RecipeRegime, RecipeType, TIMES } from "@/data/types";
 import { useRecipes } from "@/data/useRecipes";
 import { useCallback, useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import { FlatList, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -57,7 +57,6 @@ export default function Generator() {
     {/*------------------------------------------------ Header ------------------------------------------------*/}
     <Card style={styles.header} color={Colors.lavander}>
         <Row gap={Spacing.md}>
-            {/* <Image source={logos[logo]} style={styles.logo} /> */}
             <ThemedText variant="header">Trouver une recette ?</ThemedText>
             <ThemedText variant="header" color={Colors.purple}>✦ ✦</ThemedText>
         </Row>
@@ -119,10 +118,8 @@ export default function Generator() {
                   colorBorder={Colors.purple} />
         </Card>
         )}
-        <Pressable android_ripple={{color: Colors.purple, foreground: true}} onPress={draw}>
-          <View style={styles.generate}>
+        <Pressable android_ripple={{color: Colors.purple, foreground: true}} onPress={draw} style={styles.generate}>
             <ThemedText variant="bodyStrong" color={Colors.purple}>Trouver ✦✦</ThemedText>
-          </View>
         </Pressable>
       <Card>
       </Card>

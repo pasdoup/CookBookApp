@@ -53,4 +53,13 @@ export type Recipe = {
   steps:       Step[];
 };
 
+export type RecipeLoad = {
+  title:       string;
+  time:        number;
+  type:        RecipeType;
+  regime:      RecipeRegime;
+  ingredients: Ingredient[];
+  steps:       Step[];
+};
+
 export type RecipeInput = Omit<Recipe, 'id'>;

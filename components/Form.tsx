@@ -223,12 +223,10 @@ export default function Form({recipe ={}, onSubmit, submitLabel = 'Enregistrer'}
             </Pressable> 
         </Card>
 
-        <Pressable onPress={handleSubmit} android_ripple={{color: Colors.orange, foreground: true}}>
-            <View style={styles.buttonSave}>
+        <Pressable onPress={handleSubmit} android_ripple={{color: Colors.orange, foreground: true}} style={styles.buttonSave}>
                 <ThemedText variant="bodyStrong" color={Colors.orange}>
                     {submitLabel}
                 </ThemedText>
-            </View>
         </Pressable> 
     </Card>
   );

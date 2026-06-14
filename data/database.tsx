@@ -1,8 +1,9 @@
 import * as SQLite from "expo-sqlite";
+import { defaultRecipes } from './data';
 import { Ingredient, Recipe, RecipeInput, ShoppingItem, Step } from "./types";
 
 
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 let _db: SQLite.SQLiteDatabase | null = null;
 let _dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
@@ -207,6 +208,43 @@ export async function updateItem(id: number, name: string, quantity: number, uni
   );
 }
 // -------------------------------------- Default ----------------------------------------
+async function insertMultipleRecipes(recipes: RecipeInput[]): Promise<number>{
+  let count: number = 0;
+  for (const item of recipes) {
+    if (typeof item !== 'object' || !item.title || !Array.isArray(item.ingredients)   || !Array.isArray(item.steps)) {
+      continue;
+    }
+    const ingredients: Ingredient[] = item.ingredients
+      .map((ing: any) => ({
+        name: typeof ing.name === 'string' ? ing.name.trim() : '',
+        quantity: typeof ing.quantity === 'number' ? ing.quantity : 0,
+        unit: typeof ing.unit === 'string' ? ing.unit.trim() : '',
+      })).filter((ing: Ingredient) => ing.name !== '');
+
+    const steps: Step[] = item.steps
+      .map((s: any, index: number) => ({
+        order: typeof s.order === 'number' ? s.order : index + 1,
+        value: typeof s.value === 'string' ? s.value.trim() : '',
+      }))
+      .filter((s: Step) => s.value !== '');
+
+    if (ingredients.length === 0 || steps.length === 0) {
+      continue;
+    }
+
+    const payload = {
+      title:       String(item.title).trim(),
+      time:        typeof item.time === 'number' ? item.time : 30,
+      type:        item.type   ?? 'Plat',
+      regime:      item.regime ?? 'Standard',
+      ingredients,
+      steps,
+    };
+    await dbInsert(payload);
+    count++;
+  }
+  return count;
+}
 async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {
 
   const ins = (title: string, time: number, type: string, regime: string,
@@ -215,23 +253,8 @@ async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {
       'INSERT INTO recipes (title, time, type, regime, ingredients, steps) VALUES (?, ?, ?, ?, ?, ?)',
       [title, time, type, regime, JSON.stringify(ingredients), JSON.stringify(steps)]
     );
-
-  await ins('Gâteau au chocolat', 30, 'Dessert', 'Standard',
-    [{ name: 'chocolat', quantity: 200, unit: 'g' }, { name: 'beurre demi-sel', quantity: 200, unit: 'g' },
-     { name: 'oeufs', quantity: 4, unit: '' }, { name: 'sucre', quantity: 200, unit: 'g' },
-     { name: "farine", quantity: 1, unit: 'cs' }],
-    [{ order: 1, value: "Préchauffer le four à 180°C." }, { order: 2, value: "Dans une casserole à feu doux, faire fondre le beurre avec le chocolat." },
-      { order: 3, value: "Dans un saladier battre les oeufs avec le sucre et ajouter la farine" }, { order: 4, value: "Incorporer le chocolat fondu dans le saladier." },
-      { order: 5, value: "Verser la préparation dans un moule bien beurré" }, { order: 6, value: "Mettre au four 20min." }]
-  );
-
-  await ins('Poulet curry', 20, 'Plat', 'Standard',
-    [{ name: 'blanc de poulet', quantity: 200, unit: 'g' }, { name: 'lait de coco', quantity: 10, unit: 'cl' },
-     { name: 'crème fraiche', quantity: 25, unit: 'cl' }, { name: 'curry', quantity: 1, unit: '' }],
-    [{ order: 1, value: "Découper le blanc de poulet en petits morceaux." },
-      { order: 2, value: "Faire dorer le poulet dans une casserole." },
-      { order: 3, value: "Ajouter la crème et le coco à la casserole." },
-      { order: 4, value: "Ajouter au tant de curry souhaité." },
-      { order: 5, value: "Laisser réduire dans la casserole." }]
-  );
+  const recipes = defaultRecipes;
+  for (const recipe of recipes) {
+    await ins(recipe.title, recipe.time, recipe.type, recipe.regime, recipe.ingredients, recipe.steps);
+  }
 }

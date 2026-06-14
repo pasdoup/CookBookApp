@@ -37,6 +37,14 @@ export default function TabLayout() {
                 ),
                 }}
             />
+            <Tabs.Screen
+                name="settings"
+                options={{
+                tabBarIcon: ({ focused }) => (
+                    <Ionicons name={focused ? 'cog-sharp' : 'cog-outline'} color={focused ? Colors.lemon : Colors.textLight} size={30}/>
+                ),
+                }}
+            />
         </Tabs>
     )
 }

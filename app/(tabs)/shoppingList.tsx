@@ -92,10 +92,8 @@ export default function List() {
                 </Picker>
               </View>
             </Row>
-            <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={handleAdd}>
-              <View style={styles.buttonAdd}>
+            <Pressable android_ripple={{color: Colors.green, foreground: true}} onPress={handleAdd} style={styles.buttonAdd}>
                 <ThemedText variant="button">Ajouter</ThemedText>
-              </View>
             </Pressable>
           </Card>
         </Card>
