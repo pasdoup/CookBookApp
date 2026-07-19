@@ -1,7 +1,6 @@
 # CookBook App
 
 I'm still not sure if I want you to have access to that... So please be nice, it's my first mobile app and I could use some reassurance 🙈  
-I don't really what you want to discover by looking at my code, so I guess you'll fing what you're looking for by yourself
 I'm not really sure what you're hoping to find in my code, but I guess you'll figure it out on your own.
 
 The goal was to build a mobile app to store and organize my recipes, and get into the habit of actually writing them down.  
@@ -10,7 +9,7 @@ I wanted something simple, local storage only.
 
 **Technical choice**:
  - React native
- - SqlLite
+ - SqLite
 
 
 
