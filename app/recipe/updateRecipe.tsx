@@ -1,12 +1,14 @@
 import { Card } from "@/components/Card";
 import Form from "@/components/Form";
 import { HeaderBorder } from "@/components/HeaderBorder";
+import { Row } from "@/components/Row";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors, Spacing } from "@/constants";
 import { RecipeInput } from "@/data/types";
-import { useRecipes } from "@/hooks/useRecipes";
+import { useRecipes } from "@/data/useRecipes";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UpdateRecipe() {
@@ -19,7 +21,7 @@ export default function UpdateRecipe() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <Pressable onPress={router.dismissAll}>
-          <Image source={require("@/assets/images/back.png")} style={styles.logo} />
+          <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
         </Pressable> 
         <View style={[styles.header, {backgroundColor: Colors.peach}]}>
           <ThemedText variant="header">Go back</ThemedText>
@@ -41,18 +43,26 @@ export default function UpdateRecipe() {
 
   return (
     <SafeAreaView style={[ styles.container, {backgroundColor: Colors.peach}]}>
-      <ScrollView>
-        <Card style={[styles.header]} color={Colors.peach} >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={[styles.container]}
+      >
+        <Card style={styles.header} color={Colors.peach}>
           <Pressable onPress={router.back}>
-            <Image source={require("@/assets/images/back.png")} style={styles.logo} />
+            <Ionicons name='arrow-back-sharp' color={ Colors.orange } size={32}/>
           </Pressable> 
-          <ThemedText variant="header">Modifier la recette</ThemedText>
+          <Row gap={Spacing.md}>
+            <ThemedText variant="header" color={ Colors.orange }>Modifier la recette</ThemedText>
+            <Ionicons name='sparkles-sharp' color={ Colors.orange } size={30}/>
+          </Row>
           <HeaderBorder/>
         </Card>
-        <Card>
-          <Form onSubmit={update} recipe={recipe} submitLabel="Sauvegarder les modifications"/>
-        </Card>
-      </ScrollView>
+        <ScrollView>
+          <Card>
+            <Form onSubmit={update} recipe={recipe} submitLabel="Sauvegarder les modifications"/>
+          </Card>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -61,14 +71,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  logo: {
-    width: 32, 
-    height: 32
-  },
   header: {
     padding: Spacing.sm,
     paddingBottom: Spacing.xl,
-    height: 100,
+    paddingTop: Spacing.xxxl,
+    height: 175,
   },
 })
 

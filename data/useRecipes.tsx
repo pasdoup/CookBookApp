@@ -37,7 +37,7 @@ type RecipesContextType = State & {
   updateRecipe:    (id: number, input: RecipeInput) => Promise<Recipe>;
   deleteRecipe:    (id: number) => Promise<void>;
   getRecipe:       (id: number) => Recipe | undefined;
-  searchRecipes:   (q: string, regime?: string, type?: string) => Promise<Recipe[]>;
+  searchRecipes:   (q: string, regimes: string[], types: string[]) => Promise<Recipe[]>;
 
   shoppingList: any[];
   addRecipeToShoppingList: (id: number) => Promise<void>;
@@ -70,7 +70,7 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
     setShoppingList(items);
   }
 
-  //--------------------------RECIPES-------------------------------------------------
+  //-------------------------- RECIPES -------------------------------------------------
 
   const addRecipe = useCallback(async (input: RecipeInput): Promise<Recipe> => {
     const saved = await dbInsert(input);
@@ -90,9 +90,9 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getRecipe      = useCallback((id: number) => state.recipes.find(r => r.id === id), [state.recipes]);
-  const searchRecipes  = useCallback((q: string, regime?: string, type?: string) => dbSearch(q, regime, type), []);
+  const searchRecipes  = useCallback((q: string, regimes: string[], types: string[]) => dbSearch(q, regimes, types), []);
 
-  //---------------------------SHOPPINGLIST-----------------------------------------------------------------------------
+  //---------------------------SHOPPING LIST-----------------------------------------------------------------------------
 
   const addRecipeToShoppingList = useCallback(
     async (id: number) => {

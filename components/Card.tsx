@@ -6,5 +6,5 @@ type Props = ViewProps & {
 }
 
 export function Card ({style, color, ...rest}: Props) {
-  return <View style={[style,  color ? {backgroundColor: color} : {backgroundColor: Colors.cream}  ]} {...rest} />
+  return <View style={[style,  color ? {backgroundColor: color} : {backgroundColor: Colors.vanilla}  ]} {...rest} />
 }

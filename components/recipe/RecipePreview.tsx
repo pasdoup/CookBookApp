@@ -16,7 +16,7 @@ type Props =  {
     colorBorder: string,
 }
 
-export function RecipeCard ({style, id, title, time, regime, type, color, colorBorder}: Props) {
+export function RecipePreview ({style, id, title, time, regime, type, color, colorBorder}: Props) {
     return (
         <Link href={{pathname: "/recipe/id", params: {id: id}}} asChild>
             <Pressable android_ripple={{color: color, foreground: true}} style={{borderRadius: Radius.sm}}>
@@ -34,6 +34,7 @@ export function RecipeCard ({style, id, title, time, regime, type, color, colorB
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         padding: Spacing.sm, 
         height: 100,
         borderRadius: Radius.sm,

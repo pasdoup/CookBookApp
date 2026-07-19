@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite";
-import { Ingredient, Recipe, RecipeInput, ShoppingItem } from "./types";
+import { defaultRecipes } from './data';
+import { Ingredient, Recipe, RecipeInput, ShoppingItem, Step } from "./types";
 
 
 const DB_VERSION = 2;
@@ -66,7 +67,7 @@ export async function initializeDb(db: SQLite.SQLiteDatabase) {
   }
 }
 
-//------------------------------Recipe
+//------------------------------ Recipe --------------------------------------------------
 type RecipeRow = {
   id: number; title: string; time: number;
   type: string; regime: string;
@@ -81,7 +82,7 @@ function _rowToRecipe(row: RecipeRow): Recipe {
     type:        row.type   as Recipe['type'],
     regime:      row.regime as Recipe['regime'],
     ingredients: JSON.parse(row.ingredients) as Ingredient[],
-    steps:       JSON.parse(row.steps)       as string[],
+    steps:       JSON.parse(row.steps)       as Step[],
   };
 }
 
@@ -126,9 +127,9 @@ export async function dbDelete(id: number): Promise<void> {
   await db.runAsync('DELETE FROM recipes WHERE id = ?', [id]);
 }
 
-export async function dbSearch(q: string, regime?: string, type?: string): Promise<Recipe[]> {
-  const db     = await getDb();
-  const parts: string[]           = [];
+export async function dbSearch(q: string, regimes: string[], types: string[]): Promise<Recipe[]> {
+  const db = await getDb();
+  const parts: string[] = [];
   const params: (string | number)[] = [];
 
   if (q.trim()) {
@@ -136,8 +137,14 @@ export async function dbSearch(q: string, regime?: string, type?: string): Promi
     const term = `%${q.toLowerCase()}%`;
     params.push(term, term);
   }
-  if (regime && regime !== 'Tous') { parts.push('regime = ?'); params.push(regime); }
-  if (type   && type   !== 'Tous') { parts.push('type = ?');   params.push(type);   }
+  if (regimes.length > 0) {
+    parts.push(`regime IN (${regimes.map(() => '?').join(',')})`);
+    params.push(...regimes);
+  }
+  if (types.length > 0) {
+    parts.push(`type IN (${types.map(() => '?').join(',')})`);
+    params.push(...types);
+  }
 
   const where = parts.length ? `WHERE ${parts.join(' AND ')}` : '';
   const rows  = await db.getAllAsync<RecipeRow>(
@@ -146,7 +153,7 @@ export async function dbSearch(q: string, regime?: string, type?: string): Promi
   return rows.map(_rowToRecipe);
 }
 
-//-------------------------------Shopping
+//------------------------------- Shopping ----------------------------------------------
 
 export async function addItem(name: string, quantity: number, unit: string) {
   const db = await getDb();
@@ -200,60 +207,54 @@ export async function updateItem(id: number, name: string, quantity: number, uni
     [name, quantity, unit, id]
   );
 }
-// -------------------------------------- Default
+// -------------------------------------- Default ----------------------------------------
+async function insertMultipleRecipes(recipes: RecipeInput[]): Promise<number>{
+  let count: number = 0;
+  for (const item of recipes) {
+    if (typeof item !== 'object' || !item.title || !Array.isArray(item.ingredients)   || !Array.isArray(item.steps)) {
+      continue;
+    }
+    const ingredients: Ingredient[] = item.ingredients
+      .map((ing: any) => ({
+        name: typeof ing.name === 'string' ? ing.name.trim() : '',
+        quantity: typeof ing.quantity === 'number' ? ing.quantity : 0,
+        unit: typeof ing.unit === 'string' ? ing.unit.trim() : '',
+      })).filter((ing: Ingredient) => ing.name !== '');
+
+    const steps: Step[] = item.steps
+      .map((s: any, index: number) => ({
+        order: typeof s.order === 'number' ? s.order : index + 1,
+        value: typeof s.value === 'string' ? s.value.trim() : '',
+      }))
+      .filter((s: Step) => s.value !== '');
+
+    if (ingredients.length === 0 || steps.length === 0) {
+      continue;
+    }
+
+    const payload = {
+      title:       String(item.title).trim(),
+      time:        typeof item.time === 'number' ? item.time : 30,
+      type:        item.type   ?? 'Plat',
+      regime:      item.regime ?? 'Standard',
+      ingredients,
+      steps,
+    };
+    await dbInsert(payload);
+    count++;
+  }
+  return count;
+}
 async function insertDefaultRecipes(db: SQLite.SQLiteDatabase) {
 
   const ins = (title: string, time: number, type: string, regime: string,
-               ingredients: Ingredient[], steps: string[]) =>
+               ingredients: Ingredient[], steps: Step[]) =>
     db.runAsync(
       'INSERT INTO recipes (title, time, type, regime, ingredients, steps) VALUES (?, ?, ?, ?, ?, ?)',
       [title, time, type, regime, JSON.stringify(ingredients), JSON.stringify(steps)]
     );
-
-  await ins('Ratatouille provençale', 60, 'Plat', 'Végé',
-    [{ name: 'courgettes', quantity: 2, unit: '' }, { name: 'aubergines', quantity: 2, unit: '' },
-     { name: 'tomates', quantity: 3, unit: '' }, { name: 'oignons', quantity: 2, unit: '' },
-     { name: "herbes de Provence", quantity: 2, unit: 'cs' }, { name: "huile d'olive", quantity: 3, unit: 'cs' }],
-    ["Couper les légumes en rondelles.", "Faire revenir les oignons.", "Ajouter les légumes et cuire 45 min à feu doux."]
-  );
-  await ins('Spaghetti Carbonara', 25, 'Plat', 'Standard',
-    [{ name: 'spaghetti', quantity: 400, unit: 'g' }, { name: 'lardons fumés', quantity: 150, unit: 'g' },
-     { name: 'œufs', quantity: 3, unit: '' }, { name: 'parmesan râpé', quantity: 100, unit: 'g' },
-     { name: 'poivre noir', quantity: 0, unit: '' }],
-    ["Cuire les pâtes al dente.", "Rissoler les lardons.", "Mélanger œufs + parmesan hors du feu avec les pâtes."]
-  );
-  await ins('Buddha Bowl vegan', 20, 'Plat', 'Vegan',
-    [{ name: 'quinoa cuit', quantity: 150, unit: 'g' }, { name: 'pois chiches', quantity: 1, unit: 'boite' },
-     { name: 'avocat', quantity: 1, unit: '' }, { name: 'épinards frais', quantity: 100, unit: 'g' },
-     { name: 'sauce tahini', quantity: 3, unit: 'cs' }, { name: 'citron', quantity: 1, unit: '' }],
-    ["Rôtir les pois chiches 20 min à 200°C.", "Disposer le quinoa dans un bol.", "Ajouter les garnitures et arroser de tahini."]
-  );
-  await ins('Soupe de lentilles', 35, 'Boisson', 'Vegan',
-    [{ name: 'lentilles corail', quantity: 250, unit: 'g' }, { name: 'oignon', quantity: 1, unit: '' },
-     { name: 'carottes', quantity: 2, unit: '' }, { name: 'cumin', quantity: 1, unit: 'cc' },
-     { name: 'curcuma', quantity: 1, unit: 'cc' }, { name: 'bouillon légumes', quantity: 1, unit: 'l' }],
-    ["Revenir oignon et carottes.", "Ajouter épices et lentilles.", "Cuire 25 min, mixer partiellement."]
-  );
-  await ins('Tiramisu classique', 30, 'Dessert', 'Standard',
-    [{ name: 'mascarpone', quantity: 500, unit: 'g' }, { name: 'œufs', quantity: 4, unit: '' },
-     { name: 'sucre', quantity: 80, unit: 'g' }, { name: 'biscuits cuillère', quantity: 200, unit: 'g' },
-     { name: 'café fort', quantity: 200, unit: 'ml' }, { name: 'cacao amer', quantity: 2, unit: 'cs' }],
-    ["Fouetter jaunes + sucre. Incorporer mascarpone.", "Monter blancs en neige et incorporer.", "Alterner couches biscuits/crème. Réfrigérer 4h."]
-  );
-  await ins('Poulet curry coco', 40, 'Plat', 'Végé',
-    [{ name: 'blanc de poulet', quantity: 600, unit: 'g' }, { name: 'lait de coco', quantity: 400, unit: 'ml' },
-     { name: 'curry', quantity: 2, unit: 'cs' }, { name: 'oignon', quantity: 1, unit: '' }],
-    ["Revenir oignon. Ajouter curry.", "Dorer le poulet.", "Verser le lait de coco et mijoter 20 min."]
-  );
-  await ins('Omelette champignons', 15, 'Plat', 'Végé',
-    [{ name: 'œufs', quantity: 4, unit: '' }, { name: 'champignons', quantity: 200, unit: 'g' },
-     { name: 'échalote', quantity: 1, unit: '' }, { name: 'beurre', quantity: 20, unit: 'g' }],
-    ["Sauter champignons + échalote.", "Battre les œufs.", "Cuire l'omelette et garnir."]
-  );
-  await ins('Bruschetta tomates', 10, 'Entrée', 'Vegan',
-    [{ name: 'pain de campagne', quantity: 4, unit: 'tranches' }, { name: 'tomates', quantity: 3, unit: '' },
-     { name: "gousses d'ail", quantity: 2, unit: '' }, { name: 'basilic frais', quantity: 0, unit: '' },
-     { name: "huile d'olive", quantity: 2, unit: 'cs' }],
-    ["Griller le pain.", "Frotter avec l'ail.", "Garnir de tomates concassées et basilic."]
-  );
+  const recipes = defaultRecipes;
+  for (const recipe of recipes) {
+    await ins(recipe.title, recipe.time, recipe.type, recipe.regime, recipe.ingredients, recipe.steps);
+  }
 }

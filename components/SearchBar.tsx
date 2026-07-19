@@ -1,7 +1,8 @@
 
 
-import { Colors, Radius, Spacing } from "@/constants";
-import { Image, StyleSheet, TextInput } from "react-native";
+import { Colors, FontSize, Radius, Spacing } from "@/constants";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { StyleSheet, TextInput } from "react-native";
 import { Row } from "./Row";
 
 type Props = {
@@ -12,11 +13,11 @@ type Props = {
 export function SearchBar({value, onChange}: Props) {
     return (
         <Row style={ styles.search } gap={Spacing.xs}> 
-            <Image source={require("@/assets/images/search.png")} style={styles.logo} />
+            <Ionicons name={'search-outline'} color={Colors.text} />
             <TextInput
                 style={styles.input}
                 placeholder="Rechercher une recette"
-                placeholderTextColor={Colors.grey}
+                placeholderTextColor={Colors.text}
                 value={value}
                 onChangeText={onChange}
             />
@@ -30,13 +31,10 @@ const styles = StyleSheet.create({
         height: 40,
         paddingHorizontal: Spacing.sm,
         margin: Spacing.sm,
-        backgroundColor: Colors.vanilla,
-    },
-    logo: {
-        width: 16,
-        height: 16,
+        backgroundColor: Colors.bubblegumLight,
     },
     input: {
         flex: 1,
+        fontSize: FontSize.body,
     }
 });

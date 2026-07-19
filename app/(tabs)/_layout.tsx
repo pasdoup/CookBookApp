@@ -7,40 +7,41 @@ export default function TabLayout() {
         <Tabs 
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: Colors.bubblegum,
-                headerStyle: {
-                    backgroundColor: Colors.bubblegum
-                },
-                headerShadowVisible: false,
-                headerTintColor: '#fff',
+                tabBarShowLabel: false,
                 tabBarStyle: {
-                    backgroundColor:  Colors.cream
+                    backgroundColor:  Colors.vanilla,
+                    height: 100,
                 }
             }}>
             <Tabs.Screen
                 name="generator"
                 options={{
-                    title: 'Générateur',
-                    tabBarIcon: ({ color, focused }) => (
-                        <Ionicons name={focused ? 'shuffle-sharp' : 'shuffle-outline'} color={color} />
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons name={focused ? 'dice-sharp' : 'dice-outline'} color={focused ? Colors.lavander : Colors.textLight} size={30}/>
                     ),
                 }}
             />
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Recettes',
-                    tabBarIcon: ({ color, focused }) => (
-                        <Ionicons name={focused ? 'book-sharp' : 'book-outline'} color={color} />
+                    tabBarIcon: ({  focused }) => (
+                        <Ionicons name={focused ? 'book-sharp' : 'book-outline'} color={focused ? Colors.bubblegum : Colors.textLight} size={30}/>
                     ),
                 }}
-                />
+            />
             <Tabs.Screen
                 name="shoppingList"
                 options={{
-                title: 'Liste',
-                tabBarIcon: ({ color, focused }) => (
-                    <Ionicons name={focused ? 'list-sharp' : 'list-outline'} color={color} />
+                tabBarIcon: ({ focused }) => (
+                    <Ionicons name={focused ? 'cart-sharp' : 'cart-outline'} color={focused ? Colors.mint : Colors.textLight} size={30}/>
+                ),
+                }}
+            />
+            <Tabs.Screen
+                name="settings"
+                options={{
+                tabBarIcon: ({ focused }) => (
+                    <Ionicons name={focused ? 'cog-sharp' : 'cog-outline'} color={focused ? Colors.lemon : Colors.textLight} size={30}/>
                 ),
                 }}
             />

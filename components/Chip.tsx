@@ -1,4 +1,4 @@
-import { Colors } from "@/constants";
+import { Colors, Radius, Spacing } from "@/constants";
 import { Image, StyleSheet, ViewProps } from "react-native";
 import { Row } from "./Row";
 import { ThemedText } from "./ThemedText";
@@ -16,14 +16,15 @@ type Props = ViewProps & {
 export function Chip ({style, name, color, colorActive, colorBorder, time, active, ...rest}: Props) {
     return (
     <Row 
-        gap={4} 
+        gap={Spacing.xxs} 
         style={[style, 
                 styles.container, 
                 active ? 
-                    colorActive? {backgroundColor: colorActive, borderColor: colorBorder, borderWidth: 1} : {backgroundColor: Colors.vanilla} 
+                    colorActive? {backgroundColor: colorActive, borderColor: colorBorder, borderWidth: 1, borderBottomWidth: 3} : {backgroundColor: Colors.cream} 
                 : color? 
                     {backgroundColor: color} 
-                    : {backgroundColor: Colors.vanilla}]} 
+                    : {backgroundColor: Colors.cream},
+                {borderColor: colorBorder, borderWidth: 1, borderBottomWidth: active ? 3 : 1}]} 
                 {...rest} >
         {time ? 
             <Image source={require("@/assets/images/time-left.png")} style={styles.time} /> 
@@ -35,8 +36,8 @@ export function Chip ({style, name, color, colorActive, colorBorder, time, activ
 const styles = StyleSheet.create({
     container: {
         flex: 0,
-        borderRadius: 16,
-        padding: 8,
+        borderRadius: Radius.lg,
+        padding: Spacing.xs,
         minWidth: 60,
         alignItems: 'center',
         justifyContent: 'center',
@@ -46,5 +47,4 @@ const styles = StyleSheet.create({
         height: 12,
         marginRight: 4,
     },
-
 });
