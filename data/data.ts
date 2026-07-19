@@ -16,7 +16,7 @@ export const defaultRecipes=[
         "unit": "g"
       },
       {
-        "name": "oeufs",
+        "name": "Œufs",
         "quantity": 4,
         "unit": ""
       },
