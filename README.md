@@ -1,56 +1,117 @@
 # CookBook App
 
-I'm still not sure if I want you to have access to that... So please be nice, it's my first mobile app and I need to be reassure 🙈
+I'm still not sure if I want you to have access to that... So please be nice, it's my first mobile app and I could use some reassurance 🙈  
+I don't really what you want to discover by looking at my code, so I guess you'll fing what you're looking for by yourself
+I'm not really sure what you're hoping to find in my code, but I guess you'll figure it out on your own.
 
- 
+The goal was to build a mobile app to store and organize my recipes, and get into the habit of actually writing them down.  
+So I can find them more easily, get meal ideas, and stop eating the same thing every single evening.  
+I wanted something simple, local storage only.
 
-# Welcome to your Expo app 👋
+**Technical choice**:
+ - React native
+ - SqlLite
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Get started
 
-1. Install dependencies
+## Features 
 
-   ```bash
-   npm install
-   ```
+### recipes book
 
-2. Start the app
+#### Search screen
 
-   ```bash
-   npx expo start
-   ```
+ - Browse all recipes in one list
 
-In the output, you'll find options to open the app in a
+ - Filter by **type** *(Starter, Main, Dessert, Drink, Snack)* and/or **diet** *(Standard, Vegetarian, Vegan)*
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+ - Search by recipe **title** or **ingredients**
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+#### Recipe detail screen
 
-## Get a fresh project
+ - Full recipe view *(time, type, ingredients, steps…)*
 
-When you're ready, run:
+ - Button to **delete** the recipe
 
-```bash
-npm run reset-project
+ - Button to **add ingredients** to the shopping list
+
+ - Button to **edit** the recipe
+
+#### Create / Edit screen
+
+ - Set all recipe details *(title, ingredients, diet, prep time…)*
+
+ - Add or remove ingredients and preparation steps
+
+ - **Drag & drop** to reorder steps
+
+---
+
+ ### Recipe Generator
+
+ - Randomly picks a recipe based on type, diet and preparation time filters
+
+---
+
+ ### Shopping List
+
+ - Automatically generates an ingredient list from selected recipes
+
+ - Edit ingredients in the list
+
+ - Add extra ingredients manually
+
+ - Check off or remove ingredients
+
+--- 
+
+ ### Settings
+
+ - **Export** all recipes as a JSON file
+
+ - **Import** recipes from a JSON file
+
+## Project Structure
+```
+app/                  
+├── (tabs)/             # Navigation principale  
+│   ├── index.tsx       # Recherche & liste  
+│   ├── shopping.tsx    # Liste de courses  
+│   ├── random.tsx      # Générateur aléatoire  
+│   └── settings.tsx    # Import / Export  
+└── recipe/             # Écrans recette  
+├── [id].tsx            # Détail  
+├── createRecipe        # Création  
+└── updateRecipe        # Modification  
+
+components/             # Composants réutilisables  
+data/                   # Base SQLite + types TypeScript  
+constants/              # Couleurs, espacements, polices  
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## JSON Format (import / export)
 
-## Learn more
+```json
+[
+  {
+    "title": "Gâteau au chocolat",
+    "time": 30,
+    "type": "Dessert",
+    "regime": "Standard",
+    "ingredients": [
+      { "name": "chocolat", "quantity": 200, "unit": "g" },
+      { "name": "farine",   "quantity": 1,   "unit": "cs" }
+    ],
+    "steps": [
+      { "order": 1, "value": "Préchauffer le four à 180°C." },
+      { "order": 2, "value": "Faire fondre le chocolat avec le beurre." }
+    ]
+  }
+]
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## UI & Design
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+The visual side of things isn't really finished, and honestly it might never be, because I'm not good in design and forcing myself to keep working on that when I know it doesn't look great isn't great for morale.
 
-## Join the community
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Please, remember to not judge me to hard, thank you
