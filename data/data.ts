@@ -1,17 +1,17 @@
 export const defaultRecipes=[
   {
-    "title": "Gâteau au chocolat",
+    "title": "Gâteau Zorro",
     "time": 30,
     "type": "Dessert",
     "regime": "Standard",
     "ingredients": [
       {
-        "name": "chocolat",
+        "name": "Chocolat",
         "quantity": 200,
         "unit": "g"
       },
       {
-        "name": "beurre demi-sel",
+        "name": "Beurre demi-sel",
         "quantity": 200,
         "unit": "g"
       },
@@ -21,12 +21,12 @@ export const defaultRecipes=[
         "unit": ""
       },
       {
-        "name": "sucre",
+        "name": "Sucre",
         "quantity": 200,
         "unit": "g"
       },
       {
-        "name": "farine",
+        "name": "Farine",
         "quantity": 1,
         "unit": "cs"
       }
@@ -65,22 +65,22 @@ export const defaultRecipes=[
     "regime": "Standard",
     "ingredients": [
       {
-        "name": "blanc de poulet",
+        "name": "Blanc de poulet",
         "quantity": 200,
         "unit": "g"
       },
       {
-        "name": "lait de coco",
+        "name": "Lait de coco",
         "quantity": 10,
         "unit": "cl"
       },
       {
-        "name": "crème fraiche",
+        "name": "Crème fraiche",
         "quantity": 25,
         "unit": "cl"
       },
       {
-        "name": "curry",
+        "name": "Curry",
         "quantity": 1,
         "unit": ""
       }
