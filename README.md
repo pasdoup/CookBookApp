@@ -4,7 +4,7 @@ I'm still not sure if I want you to have access to that... So please be nice, it
 I'm not really sure what you're hoping to find in my code, but I guess you'll figure it out on your own.
 
 The goal was to build a mobile app to store and organize my recipes, and get into the habit of actually writing them down.  
-So I can find them more easily, get meal ideas, and stop eating the same thing every single evening.  
+So I can find them more easily, get meal ideas, and stop eating the same thing every single day.  
 I wanted something simple, local storage only.
 
 **Technical choice**:
@@ -15,7 +15,7 @@ I wanted something simple, local storage only.
 
 ## Features 
 
-### recipes book
+### ecipes book
 
 #### Search screen
 
@@ -39,7 +39,7 @@ I wanted something simple, local storage only.
 
  - Set all recipe details *(title, ingredients, diet, prep time…)*
 
- - Add or remove ingredients and preparation steps
+ - *Add* or *remove* ingredients and preparation steps
 
  - **Drag & drop** to reorder steps
 
@@ -47,19 +47,19 @@ I wanted something simple, local storage only.
 
  ### Recipe Generator
 
- - Randomly picks a recipe based on type, diet and preparation time filters
+ - **Randomly picks** a recipe based on *type*, *diet* and *preparation time* filters
 
 ---
 
  ### Shopping List
 
- - Automatically generates an ingredient list from selected recipes
+ - **Automatically generates** an ingredient list from selected recipes
 
- - Edit ingredients in the list
+ - *Edit* ingredients in the list
 
- - Add extra ingredients manually
+ - *Add* extra ingredients manually
 
- - Check off or remove ingredients
+ - *Check off* or *remove* ingredients
 
 --- 
 
@@ -110,7 +110,8 @@ constants/              # Couleurs, espacements, polices
 
 ## UI & Design
 
-The visual side of things isn't really finished, and honestly it might never be, because I'm not good in design and forcing myself to keep working on that when I know it doesn't look great isn't great for morale.
+*The visual side of things isn't really finished, and honestly it might never be, because I'm not good in design and forcing myself to keep working on that when I know it doesn't look great isn't great for morale.*
 
 
-Please, remember to not judge me to hard, thank you
+## *I hope your enjoy your visit, found what you want and you're not too dispointed :)*
+> Please, remember to not judge me to hard, **thank you**
